@@ -1,0 +1,11 @@
+.env
+.env.*
+.venv
+__pycache__
+*.pyc
+*.log
+*.swp
+.DS_Store
+server.py
+debtmanager_scraper.py
+requirements.txt

@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settlements Trabajables</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --ink: #172026;
+      --muted: #66737f;
+      --line: #d9e1e7;
+      --panel: #f6f8fa;
+      --ready: #147d52;
+      --strong: #b7791f;
+      --viable: #c05621;
+      --danger: #b42318;
+      --accent: #255e8f;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #edf2f6;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+    }
+
+    aside {
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+      padding: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    main {
+      padding: 24px;
+      overflow: auto;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.18;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 22px;
+    }
+
+    .upload {
+      border: 1px dashed #a8b5c1;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: var(--panel);
+    }
+
+    .upload label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .upload input {
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .settings {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #394650;
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: #fff;
+    }
+
+    .actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .btn {
+      border: 1px solid #1e4f79;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 14px;
+      white-space: pre-line;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .search {
+      width: min(420px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 94px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      appearance: none;
+      background: transparent;
+      color: #394650;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      padding: 12px 10px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8edf1;
+      vertical-align: top;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #f9fbfc;
+      color: #3f4d58;
+      font-size: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:hover td {
+      background: #fbfdff;
+    }
+
+    .name {
+      font-weight: 800;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-right: 6px;
+      margin-bottom: 5px;
+      background: #eef3f7;
+    }
+
+    .ready { color: var(--ready); background: #e7f6ef; }
+    .strong { color: var(--strong); background: #fff4d9; }
+    .viable { color: var(--viable); background: #fff0e6; }
+    .missing { color: var(--danger); background: #fdecec; }
+
+    .empty {
+      padding: 36px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1040px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <h1>Settlements Trabajables</h1>
+      <p class="lede">Genera la lista diaria desde DebtManager y cruza cada cliente con deals de HubSpot.</p>
+
+      <div class="upload">
+        <label for="debtFile">DebtManager report</label>
+        <input id="debtFile" type="file" accept=".csv,.xlsx,.xls">
+      </div>
+
+      <div class="upload">
+        <label for="hubFile">HubSpot deals export</label>
+        <input id="hubFile" type="file" accept=".csv,.xlsx,.xls">
+      </div>
+
+      <div class="settings">
+        <div class="field">
+          <label for="apiBase">API local FastAPI</label>
+          <input id="apiBase" type="url" value="http://127.0.0.1:8000">
+        </div>
+        <div class="field">
+          <label for="minPercent">% fondos mínimo</label>
+          <input id="minPercent" type="number" min="0" max="5000" value="40">
+        </div>
+        <div class="field">
+          <label for="highEscrow">Alta prioridad desde</label>
+          <input id="highEscrow" type="number" min="0" value="5000">
+        </div>
+        <div class="field">
+          <label for="mediumEscrow">Media prioridad desde</label>
+          <input id="mediumEscrow" type="number" min="0" value="2000">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="apiBtn">Cargar desde FastAPI</button>
+        <button class="btn" id="sampleBtn">Cargar datos de ejemplo</button>
+        <button class="btn secondary" id="exportMarkdownBtn" disabled>Exportar Markdown</button>
+        <button class="btn secondary" id="exportCsvBtn" disabled>Exportar CSV</button>
+      </div>
+
+      <p class="status" id="status">Esperando reportes.</p>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <div>
+          <h2 id="reportTitle">Reporte diario</h2>
+          <p class="muted" id="reportSource">Fuente: DebtManager + HubSpot</p>
+        </div>
+        <input class="search" id="searchInput" type="search" placeholder="Buscar cliente, ID, SID, acreedor o etapa">
+      </div>
+
+      <div class="cards" id="metrics"></div>
+
+      <div class="tabs" id="tabs"></div>
+      <div id="content"></div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      debtRows: [],
+      hubRows: [],
+      report: null,
+      tab: "ready",
+      search: ""
+    };
+
+    const sampleDebtRows = [
+      { client_id: "6403851", client: "Luis Diaz Arroyo", sid: "596368682", month: 28, escrow: 18007, creditor: "CLARO", debt_balance: 593, status: "Active" },
+      { client_id: "8143529", client: "Benedicto Oquendo JR", sid: "582451271", month: 2, escrow: 15416, creditor: "DISCOVER BANK", debt_balance: 2619, status: "Active" },
+      { client_id: "8143529", client: "Benedicto Oquendo JR", sid: "582451271", month: 2, escrow: 15416, creditor: "DISCOVER BANK", debt_balance: 2089, status: "Active" },
+      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "BAXTER CU", debt_balance: 5220, status: "Active" },
+      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "AMEX", debt_balance: 4875, status: "Active" },
+      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "JPMCB", debt_balance: 19436, status: "Active" },
+      { client_id: "8011519", client: "Zoyvette Collazo Ortiz", sid: "599144248", month: 35, escrow: 9878, creditor: "LUMA", debt_balance: 1406, status: "Active" },
+      { client_id: "8823897", client: "Jimmy Jose Andrade Zambrano", sid: "660883370", month: 9, escrow: 8339, creditor: "AMEX", debt_balance: 2032, status: "Active" },
+      { client_id: "8823897", client: "Jimmy Jose Andrade Zambrano", sid: "660883370", month: 9, escrow: 8339, creditor: "JPMCB", debt_balance: 11100, status: "Active" },
+      { client_id: "6849277", client: "Carmelo Aguilera Santiago", sid: "210293111", month: 18, escrow: 12089, creditor: "BANCO POPULAR VISA", debt_balance: 13702, status: "Active" },
+      { client_id: "5596510", client: "Adaluz Berroteran", sid: "590355835", month: 35, escrow: 2972, creditor: "CITIZENS/PHILLIPS", debt_balance: 3675, status: "Active" },
+      { client_id: "4184427", client: "Jose Taveras", sid: "097606505", month: 48, escrow: 2236, creditor: "CITIBANKNA/Credit Control", debt_balance: 4838, status: "Active" }
+    ];
+
+    const sampleHubRows = [
+      { client_id: "6403851", sid: "596368682", deal_name: "Luis Diaz Arroyo - Settlement", pipeline: "Settlement", stage: "Offer Ready", owner: "Laura" },
+      { client_id: "8143529", sid: "582451271", deal_name: "Benedicto Oquendo JR", pipeline: "Settlement", stage: "Negotiating", owner: "Miguel" },
+      { client_id: "8833819", sid: "597094628", deal_name: "Edwin Velazquez Latalladi", pipeline: "Settlement", stage: "Missing Docs", owner: "Laura" },
+      { client_id: "6849277", sid: "210293111", deal_name: "Carmelo Aguilera", pipeline: "Settlement", stage: "Future Follow-up", owner: "Nadia" }
+    ];
+
+    const fieldAliases = {
+      client_id: ["client id", "clientid", "customer id", "id cliente", "id", "account id", "dm id"],
+      client: ["client", "client name", "customer", "customer name", "name", "nombre", "cliente"],
+      sid: ["sid", "ssn", "social", "social security", "settlement id"],
+      month: ["month", "months", "program month", "month completed in the program", "mes", "mes programa"],
+      escrow: ["escrow", "escrow balance", "available escrow", "available funds", "available funds in escrow account", "current month available", "funds", "balance escrow", "fondos", "escrow available"],
+      creditor: ["creditor", "creditor name", "original creditor", "collection agency", "account", "debt", "acreedor", "nombre acreedor"],
+      debt_balance: ["balance", "current balance", "current account balance", "creditor balance", "debt balance", "account balance", "principal", "monto deuda", "deuda", "amount owed"],
+      status: ["status", "client status", "estado", "estatus"],
+      deal_name: ["deal name", "deal", "nombre del negocio", "nombre negocio"],
+      pipeline: ["pipeline", "canalizacion", "canalización"],
+      stage: ["deal stage", "stage", "etapa", "dealstage"],
+      owner: ["deal owner", "owner", "propietario", "hubspot owner"]
+    };
+
+    const els = {
+      debtFile: document.getElementById("debtFile"),
+      hubFile: document.getElementById("hubFile"),
+      apiBase: document.getElementById("apiBase"),
+      minPercent: document.getElementById("minPercent"),
+      highEscrow: document.getElementById("highEscrow"),
+      mediumEscrow: document.getElementById("mediumEscrow"),
+      apiBtn: document.getElementById("apiBtn"),
+      sampleBtn: document.getElementById("sampleBtn"),
+      exportMarkdownBtn: document.getElementById("exportMarkdownBtn"),
+      exportCsvBtn: document.getElementById("exportCsvBtn"),
+      status: document.getElementById("status"),
+      metrics: document.getElementById("metrics"),
+      tabs: document.getElementById("tabs"),
+      content: document.getElementById("content"),
+      searchInput: document.getElementById("searchInput"),
+      reportTitle: document.getElementById("reportTitle"),
+      reportSource: document.getElementById("reportSource")
+    };
+
+    function normalizeKey(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function canonicalKey(header) {
+      const normalized = normalizeKey(header);
+      for (const [key, aliases] of Object.entries(fieldAliases)) {
+        if (aliases.some(alias => normalizeKey(alias) === normalized)) return key;
+      }
+      return normalized.replace(/\s+/g, "_");
+    }
+
+    function moneyToNumber(value) {
+      if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+      const cleaned = String(value || "")
+        .replace(/\((.*)\)/, "-$1")
+        .replace(/[$,%\s,]/g, "");
+      const parsed = Number(cleaned);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function cleanText(value) {
+      return String(value || "").trim();
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let current = "";
+      let quoted = false;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const char = text[index];
+        const next = text[index + 1];
+        if (char === "\"" && quoted && next === "\"") {
+          current += "\"";
+          index += 1;
+        } else if (char === "\"") {
+          quoted = !quoted;
+        } else if (char === "," && !quoted) {
+          row.push(current);
+          current = "";
+        } else if ((char === "\n" || char === "\r") && !quoted) {
+          if (char === "\r" && next === "\n") index += 1;
+          row.push(current);
+          if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+          row = [];
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      row.push(current);
+      if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+
+      const headers = (rows.shift() || []).map(canonicalKey);
+      return rows.map(values => Object.fromEntries(headers.map((header, i) => [header, values[i] || ""])));
+    }
+
+    async function readFile(file) {
+      const extension = file.name.split(".").pop().toLowerCase();
+      if (extension === "csv") {
+        return parseCsv(await file.text());
+      }
+      if (!window.XLSX) {
+        throw new Error("Para leer Excel hace falta conexión al CDN de SheetJS. Exporta como CSV o conecta internet.");
+      }
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      return XLSX.utils.sheet_to_json(sheet, { defval: "" }).map(row => {
+        const normalized = {};
+        for (const [key, value] of Object.entries(row)) normalized[canonicalKey(key)] = value;
+        return normalized;
+      });
+    }
+
+    function normalizeDebtRow(row) {
+      return {
+        clientId: cleanText(row.client_id),
+        client: cleanText(row.client),
+        sid: cleanText(row.sid),
+        month: moneyToNumber(row.month),
+        escrow: moneyToNumber(row.escrow),
+        creditor: cleanText(row.creditor),
+        balance: moneyToNumber(row.debt_balance),
+        status: cleanText(row.status)
+      };
+    }
+
+    function normalizeHubRow(row) {
+      return {
+        clientId: cleanText(row.client_id),
+        client: cleanText(row.client),
+        sid: cleanText(row.sid),
+        dealName: cleanText(row.deal_name),
+        pipeline: cleanText(row.pipeline),
+        stage: cleanText(row.stage),
+        owner: cleanText(row.owner)
+      };
+    }
+
+    async function loadFromApi() {
+      const base = els.apiBase.value.replace(/\/$/, "");
+      els.status.textContent = "Cargando datos desde FastAPI...";
+      const [negotiatorResponse, summaryResponse] = await Promise.all([
+        fetch(`${base}/data/negotiator-escrow`),
+        fetch(`${base}/data/summary`).catch(() => null)
+      ]);
+
+      if (!negotiatorResponse.ok) {
+        throw new Error(`FastAPI respondio ${negotiatorResponse.status}. Verifica que uvicorn este corriendo en ${base}.`);
+      }
+
+      const negotiator = await negotiatorResponse.json();
+      const summary = summaryResponse && summaryResponse.ok ? await summaryResponse.json() : null;
+      state.debtRows = (negotiator.records || []).map(row => normalizeIncomingRow(row));
+      buildReport();
+      els.status.textContent = `FastAPI conectado.\nNEGOTIATOR/ESCROW: ${negotiator.count || state.debtRows.length} filas\nCLIENT SAVINGS/ESCROW: ${summary?.client_savings_escrow ?? "sin leer"} filas`;
+    }
+
+    function normalizeIncomingRow(row) {
+      const normalized = {};
+      for (const [key, value] of Object.entries(row)) {
+        normalized[canonicalKey(key)] = value;
+      }
+      return normalized;
+    }
+
+    function buildReport() {
+      const minPercent = Number(els.minPercent.value || 40);
+      const highEscrow = Number(els.highEscrow.value || 5000);
+      const mediumEscrow = Number(els.mediumEscrow.value || 2000);
+      const debtRows = state.debtRows.map(normalizeDebtRow).filter(row => row.client || row.clientId || row.creditor);
+      const hubRows = state.hubRows.map(normalizeHubRow).filter(row => row.clientId || row.sid || row.client || row.dealName);
+      const hubIndex = buildHubIndex(hubRows);
+      const clients = new Map();
+
+      for (const row of debtRows) {
+        if (row.status && normalizeKey(row.status) !== "active") continue;
+        if (!row.balance) continue;
+        const key = row.clientId || row.sid || normalizeKey(row.client);
+        if (!key) continue;
+        if (!clients.has(key)) {
+          clients.set(key, {
+            clientId: row.clientId,
+            client: row.client || "(cliente)",
+            sid: row.sid,
+            month: row.month,
+            escrow: row.escrow,
+            debts: []
+          });
+        }
+        const client = clients.get(key);
+        client.clientId ||= row.clientId;
+        client.client ||= row.client;
+        client.sid ||= row.sid;
+        client.month = client.month || row.month;
+        client.escrow = Math.max(client.escrow || 0, row.escrow || 0);
+        const percent = row.balance ? (client.escrow / row.balance) * 100 : 0;
+        if (percent >= minPercent) {
+          client.debts.push({
+            creditor: row.creditor || "(acreedor)",
+            balance: row.balance,
+            percent
+          });
+        }
+      }
+
+      const prepared = [...clients.values()].map(client => {
+        const readyDebts = client.debts.filter(debt => debt.percent >= 100);
+        const strongDebts = client.debts.filter(debt => debt.percent >= 70 && debt.percent < 100);
+        const viableDebts = client.debts.filter(debt => debt.percent >= 50 && debt.percent < 70);
+        const tier = readyDebts.length ? "ready" : strongDebts.length ? "strong" : viableDebts.length ? "viable" : "watch";
+        const priority = tier !== "ready" ? "normal" : client.escrow >= highEscrow ? "high" : client.escrow >= mediumEscrow ? "medium" : "normal";
+        const hub = matchHub(client, hubIndex);
+        return {
+          ...client,
+          readyDebts,
+          strongDebts,
+          viableDebts,
+          pendingDebts: client.debts.filter(debt => debt.percent < 100),
+          tier,
+          priority,
+          hub
+        };
+      }).filter(client => client.debts.length);
+
+      const byEscrow = (a, b) => b.escrow - a.escrow;
+      const report = {
+        date: new Date(),
+        clients: prepared.sort(byEscrow),
+        ready: prepared.filter(c => c.tier === "ready").sort(byEscrow),
+        strong: prepared.filter(c => c.tier === "strong").sort(byEscrow),
+        viable: prepared.filter(c => c.tier === "viable").sort(byEscrow),
+        watch: prepared.filter(c => c.tier === "watch").sort(byEscrow)
+      };
+      report.metrics = {
+        activeClients: prepared.length,
+        individualDebts: prepared.reduce((sum, c) => sum + c.debts.length, 0),
+        readyClients: report.ready.length,
+        strongClients: report.strong.length,
+        viableClients: report.viable.length,
+        negotiableToday: prepared.reduce((sum, c) => sum + c.readyDebts.length, 0),
+        strongDebts: prepared.reduce((sum, c) => sum + c.strongDebts.length, 0),
+        negotiableBalance: prepared.reduce((sum, c) => sum + c.readyDebts.reduce((inner, d) => inner + d.balance, 0), 0),
+        missingDeals: prepared.filter(c => !c.hub).length
+      };
+
+      state.report = report;
+      render();
+    }
+
+    function buildHubIndex(rows) {
+      const index = new Map();
+      for (const row of rows) {
+        const keys = [row.clientId, row.sid, normalizeKey(row.client), normalizeKey(row.dealName)].filter(Boolean);
+        for (const key of keys) {
+          if (!index.has(key)) index.set(key, []);
+          index.get(key).push(row);
+        }
+      }
+      return index;
+    }
+
+    function matchHub(client, index) {
+      const keys = [client.clientId, client.sid, normalizeKey(client.client)].filter(Boolean);
+      for (const key of keys) {
+        const match = index.get(key);
+        if (match && match.length) return match[0];
+      }
+      return null;
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value || 0);
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(value || 0)}%`;
+    }
+
+    function debtList(debts) {
+      if (!debts.length) return "<span class='muted'>-</span>";
+      return debts
+        .sort((a, b) => b.percent - a.percent)
+        .map(debt => `<span class="pill ${debt.percent >= 100 ? "ready" : debt.percent >= 70 ? "strong" : "viable"}">${escapeHtml(debt.creditor)} ${formatMoney(debt.balance)} (${formatPercent(debt.percent)})</span>`)
+        .join("");
+    }
+
+    function hubCell(client) {
+      if (!client.hub) return `<span class="pill missing">Sin deal</span>`;
+      const stage = client.hub.stage || "Etapa no indicada";
+      const owner = client.hub.owner ? ` · ${escapeHtml(client.hub.owner)}` : "";
+      return `<span class="pill">${escapeHtml(stage)}${owner}</span>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function currentRows() {
+      if (!state.report) return [];
+      const rows = state.report[state.tab] || [];
+      const query = normalizeKey(state.search);
+      if (!query) return rows;
+      return rows.filter(client => normalizeKey([
+        client.clientId,
+        client.client,
+        client.sid,
+        client.hub?.stage,
+        client.hub?.owner,
+        ...client.debts.map(debt => debt.creditor)
+      ].join(" ")).includes(query));
+    }
+
+    function render() {
+      if (!state.report) {
+        els.metrics.innerHTML = "";
+        els.tabs.innerHTML = "";
+        els.content.innerHTML = `<div class="section"><div class="empty">Carga reportes o usa los datos de ejemplo para empezar.</div></div>`;
+        return;
+      }
+
+      const date = state.report.date.toLocaleDateString("es-DO", { day: "2-digit", month: "long", year: "numeric" });
+      els.reportTitle.textContent = `Lista de settlements trabajables`;
+      els.reportSource.textContent = `Fecha: ${date} | Fuente: DebtManager + HubSpot`;
+      els.exportMarkdownBtn.disabled = false;
+      els.exportCsvBtn.disabled = false;
+
+      const m = state.report.metrics;
+      els.metrics.innerHTML = [
+        ["Clientes activos", m.activeClients],
+        ["Deudas analizadas", m.individualDebts],
+        ["Listos ahora", m.readyClients],
+        ["Fuertes", m.strongClients],
+        ["Viables", m.viableClients],
+        ["Deuda negociable", formatMoney(m.negotiableBalance)]
+      ].map(([label, value]) => `<div class="metric"><span>${label}</span><strong>${value}</strong></div>`).join("");
+
+      const tabs = [
+        ["ready", `Listos ahora (${state.report.ready.length})`],
+        ["strong", `Fuertes (${state.report.strong.length})`],
+        ["viable", `Viables (${state.report.viable.length})`],
+        ["watch", `40-49% (${state.report.watch.length})`],
+        ["missingDeals", `Sin deal (${m.missingDeals})`]
+      ];
+      els.tabs.innerHTML = tabs.map(([id, label]) => `<button class="tab ${state.tab === id ? "active" : ""}" data-tab="${id}">${label}</button>`).join("");
+      els.tabs.querySelectorAll(".tab").forEach(button => {
+        button.addEventListener("click", () => {
+          state.tab = button.dataset.tab;
+          render();
+        });
+      });
+
+      renderTable();
+      els.status.textContent = `DebtManager: ${state.debtRows.length} filas\nHubSpot: ${state.hubRows.length} filas\nDeals faltantes: ${m.missingDeals}`;
+    }
+
+    function renderTable() {
+      let rows = state.tab === "missingDeals"
+        ? state.report.clients.filter(client => !client.hub)
+        : currentRows();
+      if (state.tab === "missingDeals" && state.search) {
+        const query = normalizeKey(state.search);
+        rows = rows.filter(client => normalizeKey(`${client.clientId} ${client.client} ${client.sid}`).includes(query));
+      }
+      if (!rows.length) {
+        els.content.innerHTML = `<div class="section"><div class="empty">No hay resultados para esta vista.</div></div>`;
+        return;
+      }
+
+      const title = {
+        ready: "Tier 1 - Listos ahora",
+        strong: "Tier 2 - Fuertes",
+        viable: "Tier 3 - Viables",
+        watch: "Fondos entre 40% y 49%",
+        missingDeals: "Clientes sin deal abierto en HubSpot"
+      }[state.tab];
+
+      els.content.innerHTML = `
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>${title}</h2>
+              <p>${rows.length} clientes ordenados por escrow disponible.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>SID</th>
+                  <th>Mes</th>
+                  <th>Escrow</th>
+                  <th>Deudas listas</th>
+                  <th>Deudas próximas/pendientes</th>
+                  <th>HubSpot</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((client, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${escapeHtml(client.clientId || "-")}</td>
+                    <td><span class="name">${escapeHtml(client.client)}</span><br><span class="muted">${priorityLabel(client.priority)}</span></td>
+                    <td>${escapeHtml(client.sid || "-")}</td>
+                    <td>${client.month || "-"}</td>
+                    <td><strong>${formatMoney(client.escrow)}</strong></td>
+                    <td>${debtList(client.readyDebts)}</td>
+                    <td>${debtList(client.pendingDebts)}</td>
+                    <td>${hubCell(client)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    }
+
+    function priorityLabel(priority) {
+      return priority === "high" ? "Alta prioridad" : priority === "medium" ? "Media prioridad" : "Prioridad normal";
+    }
+
+    function markdownReport() {
+      const report = state.report;
+      const date = report.date.toLocaleDateString("es-DO", { day: "2-digit", month: "long", year: "numeric" });
+      const m = report.metrics;
+      const top = report.ready.slice(0, 10);
+      return `# Lista de settlements trabajables - DebtManager + HubSpot
+**Fecha:** ${date}
+
+## Resumen ejecutivo
+
+| Métrica | Valor |
+|---|---:|
+| Total clientes activos analizados | **${m.activeClients}** |
+| Total deudas individuales analizadas | **${m.individualDebts}** |
+| Clientes LISTOS AHORA | **${m.readyClients}** |
+| Clientes FUERTES | **${m.strongClients}** |
+| Clientes VIABLES | **${m.viableClients}** |
+| Deudas que se pueden negociar HOY | **${m.negotiableToday}** |
+| Deudas en nivel fuerte | **${m.strongDebts}** |
+| Total deuda negociable ahora | **${formatMoney(m.negotiableBalance)}** |
+| Clientes sin deal en HubSpot | **${m.missingDeals}** |
+
+## Top listos ahora
+
+| # | ID | Cliente | SID | Mes | Escrow | Deudas negociables ahora | HubSpot |
+|---|---|---|---|---:|---:|---|---|
+${top.map((client, index) => `| ${index + 1} | ${client.clientId || "-"} | **${client.client}** | ${client.sid || "-"} | ${client.month || "-"} | **${formatMoney(client.escrow)}** | ${plainDebtList(client.readyDebts)} | ${client.hub ? `${client.hub.stage || "Etapa no indicada"}${client.hub.owner ? ` (${client.hub.owner})` : ""}` : "Sin deal"} |`).join("\n")}
+
+## Acciones recomendadas
+
+${top.slice(0, 5).map((client, index) => `${index + 1}. **${client.client}** - ${formatMoney(client.escrow)} en escrow; ${plainDebtList(client.readyDebts)}.`).join("\n")}
+`;
+    }
+
+    function plainDebtList(debts) {
+      return debts.length
+        ? debts.map(debt => `${debt.creditor} ${formatMoney(debt.balance)} (${formatPercent(debt.percent)})`).join(" | ")
+        : "-";
+    }
+
+    function csvReport() {
+      const headers = ["tier", "priority", "client_id", "client", "sid", "month", "escrow", "ready_debts", "pending_debts", "hubspot_stage", "hubspot_owner"];
+      const rows = state.report.clients.map(client => [
+        client.tier,
+        client.priority,
+        client.clientId,
+        client.client,
+        client.sid,
+        client.month,
+        client.escrow,
+        plainDebtList(client.readyDebts),
+        plainDebtList(client.pendingDebts),
+        client.hub?.stage || "",
+        client.hub?.owner || ""
+      ]);
+      return [headers, ...rows].map(row => row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    }
+
+    function download(name, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    els.debtFile.addEventListener("change", async event => {
+      try {
+        state.debtRows = await readFile(event.target.files[0]);
+        buildReport();
+      } catch (error) {
+        els.status.textContent = error.message;
+      }
+    });
+
+    els.hubFile.addEventListener("change", async event => {
+      try {
+        state.hubRows = await readFile(event.target.files[0]);
+        buildReport();
+      } catch (error) {
+        els.status.textContent = error.message;
+      }
+    });
+
+    [els.minPercent, els.highEscrow, els.mediumEscrow].forEach(input => input.addEventListener("input", () => {
+      if (state.debtRows.length) buildReport();
+    }));
+
+    els.sampleBtn.addEventListener("click", () => {
+      state.debtRows = sampleDebtRows;
+      state.hubRows = sampleHubRows;
+      buildReport();
+    });
+
+    els.apiBtn.addEventListener("click", async () => {
+      try {
+        await loadFromApi();
+      } catch (error) {
+        els.status.textContent = error.message;
+      }
+    });
+
+    els.searchInput.addEventListener("input", event => {
+      state.search = event.target.value;
+      renderTable();
+    });
+
+    els.exportMarkdownBtn.addEventListener("click", () => download("settlements-trabajables.md", markdownReport(), "text/markdown"));
+    els.exportCsvBtn.addEventListener("click", () => download("settlements-trabajables.csv", csvReport(), "text/csv"));
+
+    render();
+  </script>
+</body>
+</html>
