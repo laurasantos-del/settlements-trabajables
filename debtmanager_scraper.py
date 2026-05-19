@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -82,13 +83,26 @@ def login(driver):
         raise RuntimeError("Faltan DM_USER o DM_PASSWORD en el archivo .env")
 
     print("[DM] Iniciando sesion...")
-    driver.get(f"{DM_BASE}/logon.php")
+    driver.get(f"{DM_BASE}/")
     wait = WebDriverWait(driver, 15)
-    wait.until(EC.presence_of_element_located((By.NAME, "oprid"))).send_keys(DM_USER)
-    driver.find_element(By.NAME, "password").send_keys(DM_PASSWORD)
+    try:
+        wait.until(EC.presence_of_element_located((By.NAME, "username"))).send_keys(DM_USER)
+    except TimeoutException:
+        save_login_diagnostics(driver)
+        raise
+    driver.find_element(By.NAME, "password_temp").send_keys(DM_PASSWORD)
     driver.find_element(By.CSS_SELECTOR, "input[type='submit'], button[type='submit']").click()
-    wait.until(EC.url_contains("home.php"))
+    wait.until(lambda d: "username" not in d.page_source.lower() or "home.php" in d.current_url)
     print("[DM] Login exitoso")
+
+
+def save_login_diagnostics(driver):
+    print(f"[DM] No aparecio el campo de login. URL actual: {driver.current_url}")
+    print(f"[DM] Titulo actual: {driver.title}")
+    with open("debtmanager_login_debug.html", "w", encoding="utf-8") as handle:
+        handle.write(driver.page_source)
+    driver.save_screenshot("debtmanager_login_debug.png")
+    print("[DM] Diagnostico guardado: debtmanager_login_debug.html y debtmanager_login_debug.png")
 
 
 def extract_rows(driver, report_name, fallback_cols, page):
@@ -118,6 +132,7 @@ def scrape_report(driver, report):
     driver.get(report["url"])
     wait = WebDriverWait(driver, 20)
     all_records = []
+    seen_pages = set()
     page = 1
 
     while True:
@@ -128,6 +143,14 @@ def scrape_report(driver, report):
             break
 
         batch = extract_rows(driver, report["name"], report["columns"], page)
+        page_signature = tuple(
+            tuple((key, value) for key, value in record.items() if key not in {"_page"})
+            for record in batch
+        )
+        if page_signature in seen_pages:
+            print(f"  Pag {page:>3}: pagina repetida detectada; cierro reporte")
+            break
+        seen_pages.add(page_signature)
         all_records.extend(batch)
 
         try:
@@ -201,14 +224,17 @@ async def send_report(records, report_name):
 
 async def main():
     driver = make_driver()
+    completed = False
     try:
         login(driver)
         for report in REPORTS:
             records = scrape_report(driver, report)
             await send_report(records, report["name"])
+        completed = True
     finally:
         driver.quit()
-        print("\nScraping completo - datos enviados al servidor")
+        if completed:
+            print("\nScraping completo - datos enviados al servidor")
 
 
 if __name__ == "__main__":

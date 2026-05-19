@@ -86,6 +86,10 @@ HubSpot:
 - Markdown para pegar como reporte diario.
 - CSV para trabajar en Excel, Sheets o HubSpot.
 
+## Base de acreedores
+
+La app carga `creditor_rules.json`, generado desde `Creditor DB.xlsx`. Al abrir un cliente desde la tabla, muestra sus cuentas, porcentaje esperado de settlement, pagos, observaciones y si el escrow alcanza para negociar segun esa regla. Si no existe regla para un acreedor, el detalle muestra una linea visual para definir `% objetivo`, pagos, dificultad y notas.
+
 ## Endpoints
 
 | Metodo | URL | Descripcion |

@@ -282,6 +282,21 @@
       font-weight: 800;
     }
 
+    .client-link {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0;
+      text-align: left;
+    }
+
+    .client-link:hover {
+      text-decoration: underline;
+    }
+
     .muted {
       color: var(--muted);
     }
@@ -303,6 +318,259 @@
     .viable { color: var(--viable); background: #fff0e6; }
     .missing { color: var(--danger); background: #fdecec; }
 
+    .rule-ok { color: var(--ready); background: #e7f6ef; }
+    .rule-watch { color: var(--strong); background: #fff7e8; }
+    .rule-missing { color: var(--danger); background: #fdecec; }
+
+    .profile-shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .back-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 800;
+      padding: 8px 11px;
+      white-space: nowrap;
+    }
+
+    .profile-header {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .profile-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding: 16px;
+      margin-bottom: 0;
+      background: #f9fbfc;
+    }
+
+    .profile-title h2 {
+      margin-bottom: 6px;
+      font-size: 22px;
+    }
+
+    .profile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 10px;
+      padding: 14px 16px 16px;
+    }
+
+    .detail-stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #f9fbfc;
+    }
+
+    .detail-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .detail-stat strong {
+      font-size: 18px;
+    }
+
+    .detail-stat .sub {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: 3px;
+    }
+
+    .client-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .client-info-item {
+      padding: 12px 16px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .client-info-item:last-child {
+      border-right: 0;
+    }
+
+    .client-info-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .client-info-item strong {
+      font-size: 14px;
+    }
+
+    .work-section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .work-section-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      background: #fbfdff;
+    }
+
+    .work-section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .profile-table {
+      min-width: 1320px;
+    }
+
+    .profile-table th,
+    .profile-table td {
+      font-size: 12px;
+      padding: 9px 10px;
+    }
+
+    .profile-table tbody tr.plan-row td {
+      background: #f4fbf7;
+    }
+
+    .profile-table tbody tr:hover td {
+      background: #f9fcff;
+    }
+
+    .mini-input,
+    .mini-textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+
+    .mini-input {
+      max-width: 82px;
+    }
+
+    .mini-textarea {
+      min-width: 220px;
+      min-height: 52px;
+      resize: vertical;
+    }
+
+    .note-cells {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 6px;
+      min-width: 290px;
+    }
+
+    .note-cell {
+      border: 1px solid #e6edf2;
+      background: #fbfdff;
+      border-radius: 6px;
+      padding: 7px;
+      min-height: 54px;
+    }
+
+    .note-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .note-cell p {
+      margin: 0;
+      color: #394650;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .monthly-estimate {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .rule-note {
+      color: #4b5964;
+      font-size: 12px;
+      line-height: 1.35;
+      max-width: 360px;
+    }
+
+    .define-line {
+      border: 1px dashed #d39a55;
+      border-radius: 8px;
+      padding: 9px;
+      background: #fffaf3;
+      min-width: 230px;
+    }
+
+    .define-line strong {
+      display: block;
+      color: #8a4b12;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .define-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .define-fields span {
+      border-bottom: 1px solid #d39a55;
+      color: #8a4b12;
+      font-size: 12px;
+      min-height: 22px;
+      padding-bottom: 3px;
+    }
+
     .empty {
       padding: 36px;
       color: var(--muted);
@@ -318,6 +586,8 @@
         border-bottom: 1px solid var(--line);
       }
       .cards { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: repeat(2, 1fr); }
+      .client-info-grid { grid-template-columns: repeat(2, 1fr); }
       main { padding: 16px; }
     }
   </style>
@@ -387,9 +657,12 @@
     const state = {
       debtRows: [],
       hubRows: [],
+      creditorRules: [],
+      creditorIndex: new Map(),
       report: null,
       tab: "ready",
-      search: ""
+      search: "",
+      selectedClientKey: ""
     };
 
     const sampleDebtRows = [
@@ -420,7 +693,9 @@
       sid: ["sid", "ssn", "social", "social security", "settlement id"],
       month: ["month", "months", "program month", "month completed in the program", "mes", "mes programa"],
       escrow: ["escrow", "escrow balance", "available escrow", "available funds", "available funds in escrow account", "current month available", "funds", "balance escrow", "fondos", "escrow available"],
-      creditor: ["creditor", "creditor name", "original creditor", "collection agency", "account", "debt", "acreedor", "nombre acreedor"],
+      original_creditor: ["original creditor", "creditor original"],
+      collection_agency: ["collection agency", "agency", "collector", "agencia de coleccion", "agencia de colección"],
+      creditor: ["creditor", "creditor name", "account", "debt", "acreedor", "nombre acreedor"],
       debt_balance: ["balance", "current balance", "current account balance", "creditor balance", "debt balance", "account balance", "principal", "monto deuda", "deuda", "amount owed"],
       status: ["status", "client status", "estado", "estatus"],
       deal_name: ["deal name", "deal", "nombre del negocio", "nombre negocio"],
@@ -479,6 +754,10 @@
       return String(value || "").trim();
     }
 
+    function normalizeCreditorName(value) {
+      return normalizeKey(String(value || "").replace(/\([^)]*\)/g, " "));
+    }
+
     function parseCsv(text) {
       const rows = [];
       let row = [];
@@ -532,13 +811,18 @@
     }
 
     function normalizeDebtRow(row) {
+      const originalCreditor = cleanText(row.original_creditor);
+      const collectionAgency = cleanText(row.collection_agency);
+      const creditor = cleanText(row.creditor) || collectionAgency || originalCreditor;
       return {
         clientId: cleanText(row.client_id),
         client: cleanText(row.client),
         sid: cleanText(row.sid),
         month: moneyToNumber(row.month),
         escrow: moneyToNumber(row.escrow),
-        creditor: cleanText(row.creditor),
+        creditor,
+        originalCreditor,
+        collectionAgency,
         balance: moneyToNumber(row.debt_balance),
         status: cleanText(row.status)
       };
@@ -583,6 +867,65 @@
       return normalized;
     }
 
+    async function loadCreditorRules() {
+      try {
+        const response = await fetch("creditor_rules.json");
+        if (!response.ok) throw new Error("No se pudo cargar creditor_rules.json");
+        const payload = await response.json();
+        state.creditorRules = payload.rules || [];
+        state.creditorIndex = buildCreditorIndex(state.creditorRules);
+        els.status.textContent = `Reglas de acreedores cargadas: ${state.creditorRules.length}`;
+      } catch (error) {
+        els.status.textContent = `${els.status.textContent}\nSin base de acreedores: ${error.message}`.trim();
+      }
+    }
+
+    function buildCreditorIndex(rules) {
+      const index = new Map();
+      for (const rule of rules) {
+        const key = normalizeCreditorName(rule.normalized || rule.name);
+        if (key) index.set(key, rule);
+      }
+      return index;
+    }
+
+    function findCreditorRule(debt) {
+      const names = [
+        debt.collectionAgency,
+        debt.originalCreditor,
+        debt.creditor,
+        ...String(debt.creditor || "").split(/[\/|,-]/)
+      ].map(normalizeCreditorName).filter(Boolean);
+
+      for (const name of names) {
+        if (state.creditorIndex.has(name)) return state.creditorIndex.get(name);
+      }
+
+      for (const name of names) {
+        for (const [key, rule] of state.creditorIndex.entries()) {
+          if (name.length >= 4 && key.length >= 4 && (name.includes(key) || key.includes(name))) {
+            return rule;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function enrichDebt(debt, escrow) {
+      const rule = findCreditorRule(debt);
+      const estimateMin = rule?.settlementMin ? debt.balance * rule.settlementMin : null;
+      const estimateMax = rule?.settlementMax ? debt.balance * rule.settlementMax : null;
+      const ruleNegotiable = estimateMax !== null ? escrow >= estimateMax : false;
+      return {
+        ...debt,
+        rule,
+        estimateMin,
+        estimateMax,
+        ruleNegotiable
+      };
+    }
+
     function buildReport() {
       const minPercent = Number(els.minPercent.value || 40);
       const highEscrow = Number(els.highEscrow.value || 5000);
@@ -617,6 +960,8 @@
         if (percent >= minPercent) {
           client.debts.push({
             creditor: row.creditor || "(acreedor)",
+            originalCreditor: row.originalCreditor,
+            collectionAgency: row.collectionAgency,
             balance: row.balance,
             percent
           });
@@ -630,12 +975,16 @@
         const tier = readyDebts.length ? "ready" : strongDebts.length ? "strong" : viableDebts.length ? "viable" : "watch";
         const priority = tier !== "ready" ? "normal" : client.escrow >= highEscrow ? "high" : client.escrow >= mediumEscrow ? "medium" : "normal";
         const hub = matchHub(client, hubIndex);
+        const enrichedDebts = client.debts.map(debt => enrichDebt(debt, client.escrow));
         return {
           ...client,
-          readyDebts,
-          strongDebts,
-          viableDebts,
-          pendingDebts: client.debts.filter(debt => debt.percent < 100),
+          key: client.clientId || client.sid || normalizeKey(client.client),
+          debts: enrichedDebts,
+          readyDebts: enrichedDebts.filter(debt => debt.percent >= 100),
+          strongDebts: enrichedDebts.filter(debt => debt.percent >= 70 && debt.percent < 100),
+          viableDebts: enrichedDebts.filter(debt => debt.percent >= 50 && debt.percent < 70),
+          pendingDebts: enrichedDebts.filter(debt => debt.percent < 100),
+          ruleNegotiableDebts: enrichedDebts.filter(debt => debt.ruleNegotiable),
           tier,
           priority,
           hub
@@ -742,6 +1091,11 @@
         return;
       }
 
+      if (state.selectedClientKey) {
+        renderClientProfile();
+        return;
+      }
+
       const date = state.report.date.toLocaleDateString("es-DO", { day: "2-digit", month: "long", year: "numeric" });
       els.reportTitle.textContent = `Lista de settlements trabajables`;
       els.reportSource.textContent = `Fecha: ${date} | Fuente: DebtManager + HubSpot`;
@@ -775,6 +1129,9 @@
 
       renderTable();
       els.status.textContent = `DebtManager: ${state.debtRows.length} filas\nHubSpot: ${state.hubRows.length} filas\nDeals faltantes: ${m.missingDeals}`;
+      if (state.creditorRules.length) {
+        els.status.textContent += `\nReglas acreedores: ${state.creditorRules.length}`;
+      }
     }
 
     function renderTable() {
@@ -826,7 +1183,7 @@
                   <tr>
                     <td>${index + 1}</td>
                     <td>${escapeHtml(client.clientId || "-")}</td>
-                    <td><span class="name">${escapeHtml(client.client)}</span><br><span class="muted">${priorityLabel(client.priority)}</span></td>
+                    <td><button class="client-link" type="button" data-client-key="${escapeHtml(client.key)}">${escapeHtml(client.client)}</button><br><span class="muted">${priorityLabel(client.priority)}</span></td>
                     <td>${escapeHtml(client.sid || "-")}</td>
                     <td>${client.month || "-"}</td>
                     <td><strong>${formatMoney(client.escrow)}</strong></td>
@@ -840,10 +1197,283 @@
           </div>
         </section>
       `;
+      els.content.querySelectorAll(".client-link").forEach(button => {
+        button.addEventListener("click", () => openClientDetail(button.dataset.clientKey));
+      });
     }
 
     function priorityLabel(priority) {
       return priority === "high" ? "Alta prioridad" : priority === "medium" ? "Media prioridad" : "Prioridad normal";
+    }
+
+    function openClientDetail(clientKey) {
+      state.selectedClientKey = clientKey;
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function closeClientDetail() {
+      state.selectedClientKey = "";
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderClientProfile() {
+      const client = state.report?.clients.find(item => item.key === state.selectedClientKey);
+      if (!client) {
+        state.selectedClientKey = "";
+        render();
+        return;
+      }
+
+      const sortedDebts = sortClientDebts(client.debts);
+      const plan = buildRecommendedPlan(client, sortedDebts);
+      const planKeys = new Set(plan.items.map(item => item.planKey));
+      const totalBalance = sortedDebts.reduce((sum, debt) => sum + debt.balance, 0);
+      const coveredIndividually = sortedDebts.filter(debt => debt.rule && client.escrow >= targetSettlement(debt)).length;
+
+      els.reportTitle.textContent = "Perfil de cliente";
+      els.reportSource.textContent = `${client.client} | ${priorityLabel(client.priority)}`;
+      els.metrics.innerHTML = "";
+      els.tabs.innerHTML = "";
+      els.content.innerHTML = `
+        <div class="profile-shell">
+          <div class="profile-topbar">
+            <button class="back-btn" type="button" id="backToList">Volver a la lista</button>
+            <span class="pill ${client.hub ? "" : "missing"}">${client.hub ? escapeHtml(client.hub.stage || "HubSpot conectado") : "Sin deal en HubSpot"}</span>
+          </div>
+
+          <section class="profile-header">
+            <div class="profile-title">
+              <div>
+                <h2>${escapeHtml(client.client)}</h2>
+                <div class="profile-meta">
+                  <span class="pill">ID ${escapeHtml(client.clientId || "-")}</span>
+                  <span class="pill">SID ${escapeHtml(client.sid || "-")}</span>
+                  <span class="pill">Mes ${client.month || "-"}</span>
+                  <span class="pill ${client.tier}">${tierLabel(client.tier)}</span>
+                </div>
+              </div>
+              <div class="detail-stat">
+                <span>Escrow disponible</span>
+                <strong>${formatMoney(client.escrow)}</strong>
+              </div>
+            </div>
+            <div class="client-info-grid">
+              <div class="client-info-item"><span>Status</span><strong>Active</strong></div>
+              <div class="client-info-item"><span>HubSpot</span><strong>${client.hub ? escapeHtml(client.hub.stage || "Con deal") : "Sin deal"}</strong></div>
+              <div class="client-info-item"><span>Owner</span><strong>${escapeHtml(client.hub?.owner || "-")}</strong></div>
+              <div class="client-info-item"><span>Fuente</span><strong>DebtManager</strong></div>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-stat"><span>Balance total evaluado</span><strong>${formatMoney(totalBalance)}</strong></div>
+              <div class="detail-stat"><span>Plan recomendado</span><strong>${formatMoney(plan.totalTarget)}</strong><div class="sub">${plan.items.length} cuenta(s), no excede escrow</div></div>
+              <div class="detail-stat"><span>Escrow restante plan</span><strong>${formatMoney(plan.remainingEscrow)}</strong><div class="sub">Despues de apartar el target</div></div>
+              <div class="detail-stat"><span>Cubren individualmente</span><strong>${coveredIndividually}</strong><div class="sub">No significa hacer todas juntas</div></div>
+            </div>
+          </section>
+
+          <section class="work-section">
+            <div class="work-section-head">
+              <div>
+                <h2>Plan recomendado</h2>
+                <p>Selecciona cuentas sin gastar mas escrow del disponible. Usa el target conservador del acreedor.</p>
+              </div>
+              <span class="pill rule-ok">${plan.items.length} incluidas</span>
+            </div>
+            ${plan.items.length ? accountTable(client, plan.items, planKeys, "plan") : `<div class="empty">No hay cuentas que entren en el plan con las reglas actuales.</div>`}
+          </section>
+
+          <section class="work-section">
+            <div class="work-section-head">
+              <div>
+                <h2>Cuentas del cliente</h2>
+                <p>Vista de trabajo: porcentajes, target, notas del acreedor, meses y notas internas.</p>
+              </div>
+              <span class="pill">${sortedDebts.length} cuentas</span>
+            </div>
+            ${accountTable(client, sortedDebts, planKeys, "all")}
+          </section>
+        </div>
+      `;
+      document.getElementById("backToList").addEventListener("click", closeClientDetail);
+      bindDecisionInputs();
+    }
+
+    function sortClientDebts(debts) {
+      return [...debts].sort((a, b) => {
+        if (b.ruleNegotiable !== a.ruleNegotiable) return Number(b.ruleNegotiable) - Number(a.ruleNegotiable);
+        if ((b.percent >= 100) !== (a.percent >= 100)) return Number(b.percent >= 100) - Number(a.percent >= 100);
+        return b.percent - a.percent;
+      });
+    }
+
+    function tierLabel(tier) {
+      return tier === "ready" ? "Listo ahora" : tier === "strong" ? "Fuerte" : tier === "viable" ? "Viable" : "Seguimiento";
+    }
+
+    function buildRecommendedPlan(client, debts) {
+      const candidates = debts
+        .filter(debt => debt.rule && targetSettlement(debt) > 0)
+        .map(debt => ({ ...debt, planKey: debtPlanKey(debt), targetAmount: targetSettlement(debt) }))
+        .sort((a, b) => {
+          if ((b.percent >= 100) !== (a.percent >= 100)) return Number(b.percent >= 100) - Number(a.percent >= 100);
+          if (a.targetAmount !== b.targetAmount) return a.targetAmount - b.targetAmount;
+          return b.percent - a.percent;
+        });
+      let remaining = client.escrow;
+      const items = [];
+      for (const debt of candidates) {
+        if (debt.targetAmount <= remaining) {
+          items.push(debt);
+          remaining -= debt.targetAmount;
+        }
+      }
+      return {
+        items,
+        totalTarget: items.reduce((sum, debt) => sum + debt.targetAmount, 0),
+        remainingEscrow: remaining
+      };
+    }
+
+    function targetSettlement(debt) {
+      if (!debt.rule || debt.estimateMax === null) return 0;
+      return debt.estimateMax;
+    }
+
+    function debtPlanKey(debt) {
+      return `${normalizeCreditorName(debt.creditor)}:${Math.round(debt.balance)}`;
+    }
+
+    function accountTable(client, debts, planKeys, tableId) {
+      return `
+        <div class="table-wrap">
+          <table class="profile-table">
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Acreedor / cuenta</th>
+                <th>Balance</th>
+                <th>Escrow vs target</th>
+                <th>% regla</th>
+                <th>Target</th>
+                <th>Pagos</th>
+                <th>Info acreedor</th>
+                <th>Meses</th>
+                <th>Nota interna</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${debts.map((debt, index) => accountRow(client, debt, index, planKeys, tableId)).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function accountRow(client, debt, index, planKeys, tableId) {
+      const rule = debt.rule;
+      const creditorParts = [
+        debt.creditor,
+        debt.originalCreditor && debt.originalCreditor !== debt.creditor ? `Original: ${debt.originalCreditor}` : "",
+        debt.collectionAgency && debt.collectionAgency !== debt.creditor ? `Agencia: ${debt.collectionAgency}` : ""
+      ].filter(Boolean);
+      const decisionKey = decisionStorageKey(client, debt);
+      const decision = loadDecision(decisionKey);
+      const suggestedMonths = Number(decision.months || rule?.maxPayments || (debt.balance > 5000 ? 24 : debt.balance > 2000 ? 18 : 12));
+      const targetAmount = targetSettlement(debt);
+      const monthly = suggestedMonths ? (targetAmount || debt.balance) / suggestedMonths : 0;
+      const inPlan = planKeys.has(debt.planKey || debtPlanKey(debt));
+      const coverage = targetAmount ? client.escrow / targetAmount : 0;
+      const needed = Math.max(targetAmount - client.escrow, 0);
+      const planPill = !rule
+        ? `<span class="pill rule-missing">Falta regla</span>`
+        : inPlan
+          ? `<span class="pill rule-ok">Incluir</span>`
+          : coverage >= 1
+            ? `<span class="pill rule-watch">Cubre sola</span>`
+            : `<span class="pill missing">No alcanza</span>`;
+
+      return `
+        <tr class="${inPlan ? "plan-row" : ""}">
+          <td>${planPill}</td>
+          <td><span class="name">${escapeHtml(creditorParts[0] || "(acreedor)")}</span>${creditorParts.slice(1).map(part => `<br><span class="muted">${escapeHtml(part)}</span>`).join("")}</td>
+          <td><strong>${formatMoney(debt.balance)}</strong></td>
+          <td>${targetAmount ? `${Math.round(coverage * 100)}%` : "-"}<br><span class="muted">${needed ? `faltan ${formatMoney(needed)}` : `${formatMoney(client.escrow)} disponible`}</span></td>
+          <td>${rule ? `<strong>${escapeHtml(rule.percentText || "-")}</strong><br><span class="muted">${escapeHtml(rule.difficulty || "")}</span>` : missingRuleInline()}</td>
+          <td>${targetAmount ? formatMoney(targetAmount) : "-"}</td>
+          <td>${escapeHtml(rule?.maxPayments || "-")}</td>
+          <td>${rule ? ruleNoteCells(rule) : missingRuleCells()}</td>
+          <td>
+            <input class="mini-input" id="months-${tableId}-${index}" type="number" min="1" max="72" value="${suggestedMonths}" data-decision-key="${escapeHtml(decisionKey)}" data-field="months" data-amount="${targetAmount || debt.balance}">
+            <div class="monthly-estimate"><strong data-monthly-for="${escapeHtml(decisionKey)}">${formatMoney(monthly)}</strong>/mes</div>
+          </td>
+          <td><textarea class="mini-textarea" id="notes-${tableId}-${index}" placeholder="Nota interna..." data-decision-key="${escapeHtml(decisionKey)}" data-field="notes">${escapeHtml(decision.notes || "")}</textarea></td>
+        </tr>
+      `;
+    }
+
+    function ruleNoteCells(rule) {
+      return `
+        <div class="note-cells">
+          <div class="note-cell"><span>Respuesta</span><p>${escapeHtml(rule.responseTime || "No documentado")}</p></div>
+          <div class="note-cell"><span>Carta</span><p>${escapeHtml(rule.requirements || "No documentado")}</p></div>
+          <div class="note-cell" style="grid-column: 1 / -1;"><span>Observaciones</span><p>${escapeHtml(rule.notes || "Sin observaciones")}</p></div>
+        </div>
+      `;
+    }
+
+    function missingRuleInline() {
+      return `
+        <div class="define-line">
+          <strong>Definir regla</strong>
+          <div class="define-fields"><span>%</span><span>pagos</span></div>
+        </div>
+      `;
+    }
+
+    function missingRuleCells() {
+      return `
+        <div class="note-cells">
+          <div class="note-cell"><span>Respuesta</span><p>Por definir</p></div>
+          <div class="note-cell"><span>Carta</span><p>Por definir</p></div>
+          <div class="note-cell" style="grid-column: 1 / -1;"><span>Observaciones</span><p>Crear regla del acreedor para calcular target y pagos.</p></div>
+        </div>
+      `;
+    }
+
+    function decisionStorageKey(client, debt) {
+      return `settlementDecision:${client.key}:${normalizeCreditorName(debt.creditor)}:${Math.round(debt.balance)}`;
+    }
+
+    function loadDecision(key) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveDecision(key, field, value) {
+      const current = loadDecision(key);
+      current[field] = value;
+      localStorage.setItem(key, JSON.stringify(current));
+    }
+
+    function bindDecisionInputs() {
+      els.content.querySelectorAll("[data-decision-key]").forEach(input => {
+        input.addEventListener("input", event => {
+          const key = event.target.dataset.decisionKey;
+          const field = event.target.dataset.field;
+          saveDecision(key, field, event.target.value);
+          if (field === "months") {
+            const months = Number(event.target.value || 0);
+            const amount = Number(event.target.dataset.amount || 0);
+            const target = [...els.content.querySelectorAll("[data-monthly-for]")].find(item => item.dataset.monthlyFor === key);
+            if (target) target.textContent = months ? formatMoney(amount / months) : "-";
+          }
+        });
+      });
     }
 
     function markdownReport() {
@@ -952,12 +1582,17 @@ ${top.slice(0, 5).map((client, index) => `${index + 1}. **${client.client}** - $
 
     els.searchInput.addEventListener("input", event => {
       state.search = event.target.value;
-      renderTable();
+      if (!state.selectedClientKey) renderTable();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && state.selectedClientKey) closeClientDetail();
     });
 
     els.exportMarkdownBtn.addEventListener("click", () => download("settlements-trabajables.md", markdownReport(), "text/markdown"));
     els.exportCsvBtn.addEventListener("click", () => download("settlements-trabajables.csv", csvReport(), "text/csv"));
 
+    loadCreditorRules();
     render();
   </script>
 </body>
