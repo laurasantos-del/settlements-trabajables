@@ -40,8 +40,6 @@ button, input, select, textarea {
 
 .app {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
 }
 
 aside {

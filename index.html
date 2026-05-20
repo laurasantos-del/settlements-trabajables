@@ -4,54 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Settlements Trabajables</title>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app">
-    <aside>
-      <h1>Settlements Trabajables</h1>
-      <p class="lede">Genera la lista diaria desde DebtManager y cruza cada cliente con deals de HubSpot.</p>
-
-      <div class="upload">
-        <label for="debtFile">DebtManager report</label>
-        <input id="debtFile" type="file" accept=".csv,.xlsx,.xls">
-      </div>
-
-      <div class="upload">
-        <label for="hubFile">HubSpot deals export</label>
-        <input id="hubFile" type="file" accept=".csv,.xlsx,.xls">
-      </div>
-
-      <div class="settings">
-        <div class="field">
-          <label for="apiBase">API local FastAPI</label>
-          <input id="apiBase" type="url" value="http://127.0.0.1:8000">
-        </div>
-        <div class="field">
-          <label for="minPercent">% fondos mínimo</label>
-          <input id="minPercent" type="number" min="0" max="5000" value="40">
-        </div>
-        <div class="field">
-          <label for="highEscrow">Alta prioridad desde</label>
-          <input id="highEscrow" type="number" min="0" value="5000">
-        </div>
-        <div class="field">
-          <label for="mediumEscrow">Media prioridad desde</label>
-          <input id="mediumEscrow" type="number" min="0" value="2000">
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="apiBtn">Cargar desde FastAPI</button>
-        <button class="btn" id="sampleBtn">Cargar datos de ejemplo</button>
-        <button class="btn secondary" id="exportMarkdownBtn" disabled>Exportar Markdown</button>
-        <button class="btn secondary" id="exportCsvBtn" disabled>Exportar CSV</button>
-      </div>
-
-      <p class="status" id="status">Esperando reportes.</p>
-    </aside>
-
     <main>
       <div class="toolbar">
         <div>
@@ -69,6 +25,11 @@
   </div>
 
   <script>
+    const API_URL = "http://127.0.0.1:8000";
+    const FONDOS_MINIMO = 40;
+    const ALTA_PRIORIDAD_DESDE = 5000;
+    const MEDIA_PRIORIDAD_DESDE = 2000;
+
     const state = {
       debtRows: [],
       hubRows: [],
@@ -79,28 +40,6 @@
       search: "",
       selectedClientKey: ""
     };
-
-    const sampleDebtRows = [
-      { client_id: "6403851", client: "Luis Diaz Arroyo", sid: "596368682", month: 28, escrow: 18007, creditor: "CLARO", debt_balance: 593, status: "Active" },
-      { client_id: "8143529", client: "Benedicto Oquendo JR", sid: "582451271", month: 2, escrow: 15416, creditor: "DISCOVER BANK", debt_balance: 2619, status: "Active" },
-      { client_id: "8143529", client: "Benedicto Oquendo JR", sid: "582451271", month: 2, escrow: 15416, creditor: "DISCOVER BANK", debt_balance: 2089, status: "Active" },
-      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "BAXTER CU", debt_balance: 5220, status: "Active" },
-      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "AMEX", debt_balance: 4875, status: "Active" },
-      { client_id: "8833819", client: "Edwin Velazquez Latalladi", sid: "597094628", month: 8, escrow: 11149, creditor: "JPMCB", debt_balance: 19436, status: "Active" },
-      { client_id: "8011519", client: "Zoyvette Collazo Ortiz", sid: "599144248", month: 35, escrow: 9878, creditor: "LUMA", debt_balance: 1406, status: "Active" },
-      { client_id: "8823897", client: "Jimmy Jose Andrade Zambrano", sid: "660883370", month: 9, escrow: 8339, creditor: "AMEX", debt_balance: 2032, status: "Active" },
-      { client_id: "8823897", client: "Jimmy Jose Andrade Zambrano", sid: "660883370", month: 9, escrow: 8339, creditor: "JPMCB", debt_balance: 11100, status: "Active" },
-      { client_id: "6849277", client: "Carmelo Aguilera Santiago", sid: "210293111", month: 18, escrow: 12089, creditor: "BANCO POPULAR VISA", debt_balance: 13702, status: "Active" },
-      { client_id: "5596510", client: "Adaluz Berroteran", sid: "590355835", month: 35, escrow: 2972, creditor: "CITIZENS/PHILLIPS", debt_balance: 3675, status: "Active" },
-      { client_id: "4184427", client: "Jose Taveras", sid: "097606505", month: 48, escrow: 2236, creditor: "CITIBANKNA/Credit Control", debt_balance: 4838, status: "Active" }
-    ];
-
-    const sampleHubRows = [
-      { client_id: "6403851", sid: "596368682", deal_name: "Luis Diaz Arroyo - Settlement", pipeline: "Settlement", stage: "Offer Ready", owner: "Laura" },
-      { client_id: "8143529", sid: "582451271", deal_name: "Benedicto Oquendo JR", pipeline: "Settlement", stage: "Negotiating", owner: "Miguel" },
-      { client_id: "8833819", sid: "597094628", deal_name: "Edwin Velazquez Latalladi", pipeline: "Settlement", stage: "Missing Docs", owner: "Laura" },
-      { client_id: "6849277", sid: "210293111", deal_name: "Carmelo Aguilera", pipeline: "Settlement", stage: "Future Follow-up", owner: "Nadia" }
-    ];
 
     const fieldAliases = {
       client_id: ["client id", "clientid", "customer id", "id cliente", "id", "account id", "dm id"],
@@ -120,17 +59,6 @@
     };
 
     const els = {
-      debtFile: document.getElementById("debtFile"),
-      hubFile: document.getElementById("hubFile"),
-      apiBase: document.getElementById("apiBase"),
-      minPercent: document.getElementById("minPercent"),
-      highEscrow: document.getElementById("highEscrow"),
-      mediumEscrow: document.getElementById("mediumEscrow"),
-      apiBtn: document.getElementById("apiBtn"),
-      sampleBtn: document.getElementById("sampleBtn"),
-      exportMarkdownBtn: document.getElementById("exportMarkdownBtn"),
-      exportCsvBtn: document.getElementById("exportCsvBtn"),
-      status: document.getElementById("status"),
       metrics: document.getElementById("metrics"),
       tabs: document.getElementById("tabs"),
       content: document.getElementById("content"),
@@ -173,58 +101,6 @@
       return normalizeKey(String(value || "").replace(/\([^)]*\)/g, " "));
     }
 
-    function parseCsv(text) {
-      const rows = [];
-      let row = [];
-      let current = "";
-      let quoted = false;
-
-      for (let index = 0; index < text.length; index += 1) {
-        const char = text[index];
-        const next = text[index + 1];
-        if (char === "\"" && quoted && next === "\"") {
-          current += "\"";
-          index += 1;
-        } else if (char === "\"") {
-          quoted = !quoted;
-        } else if (char === "," && !quoted) {
-          row.push(current);
-          current = "";
-        } else if ((char === "\n" || char === "\r") && !quoted) {
-          if (char === "\r" && next === "\n") index += 1;
-          row.push(current);
-          if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
-          row = [];
-          current = "";
-        } else {
-          current += char;
-        }
-      }
-      row.push(current);
-      if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
-
-      const headers = (rows.shift() || []).map(canonicalKey);
-      return rows.map(values => Object.fromEntries(headers.map((header, i) => [header, values[i] || ""])));
-    }
-
-    async function readFile(file) {
-      const extension = file.name.split(".").pop().toLowerCase();
-      if (extension === "csv") {
-        return parseCsv(await file.text());
-      }
-      if (!window.XLSX) {
-        throw new Error("Para leer Excel hace falta conexión al CDN de SheetJS. Exporta como CSV o conecta internet.");
-      }
-      const buffer = await file.arrayBuffer();
-      const workbook = XLSX.read(buffer);
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      return XLSX.utils.sheet_to_json(sheet, { defval: "" }).map(row => {
-        const normalized = {};
-        for (const [key, value] of Object.entries(row)) normalized[canonicalKey(key)] = value;
-        return normalized;
-      });
-    }
-
     function normalizeDebtRow(row) {
       const originalCreditor = cleanText(row.original_creditor);
       const collectionAgency = cleanText(row.collection_agency);
@@ -256,22 +132,18 @@
     }
 
     async function loadFromApi() {
-      const base = els.apiBase.value.replace(/\/$/, "");
-      els.status.textContent = "Cargando datos desde FastAPI...";
-      const [negotiatorResponse, summaryResponse] = await Promise.all([
-        fetch(`${base}/data/negotiator-escrow`),
-        fetch(`${base}/data/summary`).catch(() => null)
+      const [negotiatorResponse] = await Promise.all([
+        fetch(`${API_URL}/data/negotiator-escrow`),
+        fetch(`${API_URL}/data/summary`).catch(() => null)
       ]);
 
       if (!negotiatorResponse.ok) {
-        throw new Error(`FastAPI respondio ${negotiatorResponse.status}. Verifica que uvicorn este corriendo en ${base}.`);
+        throw new Error(`FastAPI respondio ${negotiatorResponse.status}. Verifica que uvicorn este corriendo en ${API_URL}.`);
       }
 
       const negotiator = await negotiatorResponse.json();
-      const summary = summaryResponse && summaryResponse.ok ? await summaryResponse.json() : null;
       state.debtRows = (negotiator.records || []).map(row => normalizeIncomingRow(row));
       buildReport();
-      els.status.textContent = `FastAPI conectado.\nNEGOTIATOR/ESCROW: ${negotiator.count || state.debtRows.length} filas\nCLIENT SAVINGS/ESCROW: ${summary?.client_savings_escrow ?? "sin leer"} filas`;
     }
 
     function normalizeIncomingRow(row) {
@@ -289,9 +161,8 @@
         const payload = await response.json();
         state.creditorRules = payload.rules || [];
         state.creditorIndex = buildCreditorIndex(state.creditorRules);
-        els.status.textContent = `Reglas de acreedores cargadas: ${state.creditorRules.length}`;
-      } catch (error) {
-        els.status.textContent = `${els.status.textContent}\nSin base de acreedores: ${error.message}`.trim();
+      } catch {
+        // creditor_rules.json es opcional; continuar sin reglas
       }
     }
 
@@ -342,9 +213,6 @@
     }
 
     function buildReport() {
-      const minPercent = Number(els.minPercent.value || 40);
-      const highEscrow = Number(els.highEscrow.value || 5000);
-      const mediumEscrow = Number(els.mediumEscrow.value || 2000);
       const debtRows = state.debtRows.map(normalizeDebtRow).filter(row => row.client || row.clientId || row.creditor);
       const hubRows = state.hubRows.map(normalizeHubRow).filter(row => row.clientId || row.sid || row.client || row.dealName);
       const hubIndex = buildHubIndex(hubRows);
@@ -373,7 +241,7 @@
         client.month = client.month || row.month;
         client.escrow = Math.max(client.escrow || 0, row.escrow || 0);
         const percent = row.balance ? (client.escrow / row.balance) * 100 : 0;
-        if (percent >= minPercent) {
+        if (percent >= FONDOS_MINIMO) {
           client.debts.push({
             creditor: row.creditor || "(acreedor)",
             originalCreditor: row.originalCreditor,
@@ -389,7 +257,7 @@
         const strongDebts = client.debts.filter(debt => debt.percent >= 70 && debt.percent < 100);
         const viableDebts = client.debts.filter(debt => debt.percent >= 50 && debt.percent < 70);
         const tier = readyDebts.length ? "ready" : strongDebts.length ? "strong" : viableDebts.length ? "viable" : "watch";
-        const priority = tier !== "ready" ? "normal" : client.escrow >= highEscrow ? "high" : client.escrow >= mediumEscrow ? "medium" : "normal";
+        const priority = tier !== "ready" ? "normal" : client.escrow >= ALTA_PRIORIDAD_DESDE ? "high" : client.escrow >= MEDIA_PRIORIDAD_DESDE ? "medium" : "normal";
         const hub = matchHub(client, hubIndex);
         const enrichedDebts = client.debts.map(debt => enrichDebt(debt, client.escrow));
         return {
@@ -477,13 +345,6 @@
         .join("");
     }
 
-    function hubCell(client) {
-      if (!client.hub) return `<span class="pill missing">Sin deal</span>`;
-      const stage = client.hub.stage || "Etapa no indicada";
-      const owner = client.hub.owner ? ` · ${escapeHtml(client.hub.owner)}` : "";
-      return `<span class="pill">${escapeHtml(stage)}${owner}</span>`;
-    }
-
     function escapeHtml(value) {
       return String(value || "")
         .replace(/&/g, "&amp;")
@@ -511,7 +372,7 @@
       if (!state.report) {
         els.metrics.innerHTML = "";
         els.tabs.innerHTML = "";
-        els.content.innerHTML = `<div class="section"><div class="empty">Carga reportes o usa los datos de ejemplo para empezar.</div></div>`;
+        els.content.innerHTML = `<div class="section"><div class="empty">Cargando datos...</div></div>`;
         return;
       }
 
@@ -522,9 +383,7 @@
 
       const date = state.report.date.toLocaleDateString("es-DO", { day: "2-digit", month: "long", year: "numeric" });
       els.reportTitle.textContent = `Lista de settlements trabajables`;
-      els.reportSource.textContent = `Fecha: ${date} | Fuente: DebtManager + HubSpot`;
-      els.exportMarkdownBtn.disabled = false;
-      els.exportCsvBtn.disabled = false;
+      els.reportSource.textContent = `Fecha: ${date} | Fuente: DebtManager`;
 
       const m = state.report.metrics;
       els.metrics.innerHTML = [
@@ -551,10 +410,6 @@
       });
 
       renderTable();
-      els.status.textContent = `DebtManager: ${state.debtRows.length} filas\nHubSpot: ${state.hubRows.length} filas\nDeals faltantes: ${m.missingDeals}`;
-      if (state.creditorRules.length) {
-        els.status.textContent += `\nReglas acreedores: ${state.creditorRules.length}`;
-      }
     }
 
     function renderTable() {
@@ -892,110 +747,6 @@
       });
     }
 
-    function markdownReport() {
-      const report = state.report;
-      const date = report.date.toLocaleDateString("es-DO", { day: "2-digit", month: "long", year: "numeric" });
-      const m = report.metrics;
-      const top = report.ready.slice(0, 10);
-      return `# Lista de settlements trabajables - DebtManager + HubSpot
-**Fecha:** ${date}
-
-## Resumen ejecutivo
-
-| Métrica | Valor |
-|---|---:|
-| Total clientes activos analizados | **${m.activeClients}** |
-| Total deudas individuales analizadas | **${m.individualDebts}** |
-| Clientes LISTOS AHORA | **${m.readyClients}** |
-| Clientes FUERTES | **${m.strongClients}** |
-| Clientes VIABLES | **${m.viableClients}** |
-| Deudas que se pueden negociar HOY | **${m.negotiableToday}** |
-| Deudas en nivel fuerte | **${m.strongDebts}** |
-| Total deuda negociable ahora | **${formatMoney(m.negotiableBalance)}** |
-| Clientes sin deal en HubSpot | **${m.missingDeals}** |
-
-## Top listos ahora
-
-| # | ID | Cliente | SID | Mes | Escrow | Deudas negociables ahora | HubSpot |
-|---|---|---|---|---:|---:|---|---|
-${top.map((client, index) => `| ${index + 1} | ${client.clientId || "-"} | **${client.client}** | ${client.sid || "-"} | ${client.month || "-"} | **${formatMoney(client.escrow)}** | ${plainDebtList(client.readyDebts)} | ${client.hub ? `${client.hub.stage || "Etapa no indicada"}${client.hub.owner ? ` (${client.hub.owner})` : ""}` : "Sin deal"} |`).join("\n")}
-
-## Acciones recomendadas
-
-${top.slice(0, 5).map((client, index) => `${index + 1}. **${client.client}** - ${formatMoney(client.escrow)} en escrow; ${plainDebtList(client.readyDebts)}.`).join("\n")}
-`;
-    }
-
-    function plainDebtList(debts) {
-      return debts.length
-        ? debts.map(debt => `${debt.creditor} ${formatMoney(debt.balance)} (${formatPercent(debt.percent)})`).join(" | ")
-        : "-";
-    }
-
-    function csvReport() {
-      const headers = ["tier", "priority", "client_id", "client", "sid", "month", "escrow", "ready_debts", "pending_debts", "hubspot_stage", "hubspot_owner"];
-      const rows = state.report.clients.map(client => [
-        client.tier,
-        client.priority,
-        client.clientId,
-        client.client,
-        client.sid,
-        client.month,
-        client.escrow,
-        plainDebtList(client.readyDebts),
-        plainDebtList(client.pendingDebts),
-        client.hub?.stage || "",
-        client.hub?.owner || ""
-      ]);
-      return [headers, ...rows].map(row => row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
-    }
-
-    function download(name, text, type) {
-      const blob = new Blob([text], { type });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = name;
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-
-    els.debtFile.addEventListener("change", async event => {
-      try {
-        state.debtRows = await readFile(event.target.files[0]);
-        buildReport();
-      } catch (error) {
-        els.status.textContent = error.message;
-      }
-    });
-
-    els.hubFile.addEventListener("change", async event => {
-      try {
-        state.hubRows = await readFile(event.target.files[0]);
-        buildReport();
-      } catch (error) {
-        els.status.textContent = error.message;
-      }
-    });
-
-    [els.minPercent, els.highEscrow, els.mediumEscrow].forEach(input => input.addEventListener("input", () => {
-      if (state.debtRows.length) buildReport();
-    }));
-
-    els.sampleBtn.addEventListener("click", () => {
-      state.debtRows = sampleDebtRows;
-      state.hubRows = sampleHubRows;
-      buildReport();
-    });
-
-    els.apiBtn.addEventListener("click", async () => {
-      try {
-        await loadFromApi();
-      } catch (error) {
-        els.status.textContent = error.message;
-      }
-    });
-
     els.searchInput.addEventListener("input", event => {
       state.search = event.target.value;
       if (!state.selectedClientKey) renderTable();
@@ -1005,11 +756,17 @@ ${top.slice(0, 5).map((client, index) => `${index + 1}. **${client.client}** - $
       if (event.key === "Escape" && state.selectedClientKey) closeClientDetail();
     });
 
-    els.exportMarkdownBtn.addEventListener("click", () => download("settlements-trabajables.md", markdownReport(), "text/markdown"));
-    els.exportCsvBtn.addEventListener("click", () => download("settlements-trabajables.csv", csvReport(), "text/csv"));
+    async function init() {
+      render();
+      await loadCreditorRules();
+      try {
+        await loadFromApi();
+      } catch (error) {
+        els.content.innerHTML = `<div class="section"><div class="empty">Error al conectar con FastAPI en ${API_URL}: ${escapeHtml(error.message)}</div></div>`;
+      }
+    }
 
-    loadCreditorRules();
-    render();
+    init();
   </script>
 </body>
 </html>
