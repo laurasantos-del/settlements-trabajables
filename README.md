@@ -47,6 +47,7 @@ http://127.0.0.1:4173/index.html
 - **DebtManager report:** CSV, XLSX o XLS.
 - **HubSpot deals export:** CSV, XLSX o XLS.
 - **FastAPI:** boton `Cargar desde FastAPI`, que lee `GET /data/negotiator-escrow`.
+- **Client interactions:** el scraper tambien carga `client_interactions` y queda disponible en `GET /data/client-interactions`.
 
 La app intenta reconocer columnas con nombres comunes en ingles o espanol.
 
@@ -96,5 +97,20 @@ La app carga `creditor_rules.json`, generado desde `Creditor DB.xlsx`. Al abrir 
 |---|---|---|
 | GET | `/data/client-savings-escrow` | CLIENT SAVINGS/ESCROW REPORT completo |
 | GET | `/data/negotiator-escrow` | NEGOTIATOR/ESCROW REPORT completo |
+| GET | `/data/client-interactions` | CLIENT INTERACTIONS REPORT completo |
 | GET | `/data/summary` | Conteo de registros por reporte |
 | DELETE | `/data/clear` | Limpia los datos en memoria |
+
+## Client interactions
+
+Por defecto el scraper usa:
+
+```text
+https://secure.debtmanagersoft.com/dfreedomusa/system/rpt_client_interactions.php
+```
+
+Si DebtManager usa otra ruta para ese reporte, agrega o cambia esta variable en `.env`:
+
+```bash
+CLIENT_INTERACTIONS_URL=https://secure.debtmanagersoft.com/dfreedomusa/system/URL_REAL_DEL_REPORTE.php
+```
