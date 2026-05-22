@@ -1,0 +1,27 @@
+# Secretos cifrados
+.env
+.secret.key
+.secrets.enc
+
+# Datos generados por el scraper
+esig_library_data.csv
+*.csv
+
+# Logs
+esig_scraper.log
+*.log
+
+# JSON generados
+esig_changes_log.json
+hubspot_tickets_created.json
+
+# HTML de debug
+debug_debttrakker_response.html
+debug_*.html
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/

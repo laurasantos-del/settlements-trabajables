@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+*.swp
+debtmanager_login_debug.*
+debtmanager_store.json
+settlements.db
+*.png
+debug_*.html
+live_*.html
+probe_*.html
+debtmanager_*_debug.html
+.claude/
+.venv.xcode-stub-backup-*/

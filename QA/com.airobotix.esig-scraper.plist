@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Identificador unico del LaunchAgent -->
+    <key>Label</key>
+    <string>com.airobotix.esig-scraper</string>
+
+    <!-- Que ejecutar -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Developer/CommandLineTools/usr/bin/python3</string>
+        <string>/Users/laurasantos/Documents/Codex/2026-05-18/QA/esig_scraper.py</string>
+        <string>--once</string>
+    </array>
+
+    <!-- Directorio de trabajo (para que encuentre .secrets.enc, etc.) -->
+    <key>WorkingDirectory</key>
+    <string>/Users/laurasantos/Documents/Codex/2026-05-18/QA</string>
+
+    <!-- Corre al cargar el agente (una vez al cargar) -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Y luego cada hora exacta, minuto 0 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Logs separados de stdout / stderr -->
+    <key>StandardOutPath</key>
+    <string>/Users/laurasantos/Documents/Codex/2026-05-18/QA/launchd.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/laurasantos/Documents/Codex/2026-05-18/QA/launchd.stderr.log</string>
+
+    <!-- Variables de entorno mínimas -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>LANG</key>
+        <string>en_US.UTF-8</string>
+    </dict>
+
+    <!-- Si falla, no relanzar indefinidamente; esperar al próximo schedule -->
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>
