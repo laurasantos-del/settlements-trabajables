@@ -1,0 +1,31 @@
+{
+  "client": {
+    "client_id": "6286218",
+    "first_name": "Melinda",
+    "last_name": "Vasquez",
+    "program_type": "Debt Settlement"
+  },
+  "creditors": [
+    {
+      "creditor_id": "c-001",
+      "creditor_name": "JPMORGAN CHASE BANK NA",
+      "status": "active"
+    },
+    {
+      "creditor_id": "c-002",
+      "creditor_name": "Bank of America",
+      "status": "active",
+      "email": "loa@example-creditor.test"
+    },
+    {
+      "creditor_id": "c-003",
+      "creditor_name": "Merrick Bank",
+      "status": "active"
+    },
+    {
+      "creditor_id": "c-004",
+      "creditor_name": "DISC/FNBSD",
+      "status": "active"
+    }
+  ]
+}

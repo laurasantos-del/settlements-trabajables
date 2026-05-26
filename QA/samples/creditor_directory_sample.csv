@@ -1,0 +1,3 @@
+creditor_id,creditor_name,email,fax_number,postal_address,postal_zip,send_method,letterstream_flag,notes,last_updated
+dir-001,Bank of America,loa@example-creditor.test,,,,email,false,Sample email route,2026-05-22T00:00:00Z
+dir-002,Merrick Bank,,,P.O. Box 9201 Old Bethpage NY,11804,letterstream,true,Sample postal route,2026-05-22T00:00:00Z

@@ -232,3 +232,50 @@ python3 -m py_compile esig_scraper.py manage_secrets.py
 python3 manage_secrets.py --status
 python3 esig_scraper.py --once --max-pages 1 --skip-hubspot
 ```
+
+---
+
+# LOA Automation - Fase 1 Dry Run
+
+`loa_automation.py` implementa la primera fase segura del flujo LOA:
+
+- lee un payload tipo DebtManager con cliente y acreedores activos,
+- ejecuta el hard stop antes de cualquier documento,
+- resuelve aliases conocidos como `DISC/FNBSD -> discover`,
+- consulta opcionalmente un directorio CSV de acreedores,
+- decide ruta (`email`, `fax`, `postal_review`, `manual_exception`, `blocked`),
+- genera el nombre final del PDF,
+- escribe un resultado auditable en JSON.
+
+Por diseno, esta fase no envia email/FAX, no crea jobs en LetterStream, no
+descarga documentos y no cierra tickets productivos.
+
+## Ejecutar con datos de muestra
+
+```bash
+python3 loa_automation.py \
+  --input-file samples/loa_dm_payload_sample.json \
+  --creditor-directory samples/creditor_directory_sample.csv \
+  --ticket-id 5908385 \
+  --output loa_dry_run_results.json
+```
+
+## Pruebas
+
+```bash
+python3 -m py_compile loa_automation.py test_loa_automation.py
+python3 -m unittest test_loa_automation.py
+```
+
+## Siguiente conexion real
+
+Antes de activar modo live hay que confirmar los endpoints de DebtManager:
+
+- obtener cliente/deudas activas,
+- listar attachments,
+- descargar attachment,
+- escribir nota por acreedor,
+- actualizar status del acreedor.
+
+Cuando esos endpoints esten confirmados, el dry run se conecta al origen real
+de DM manteniendo la misma logica de hard stop y ruteo.

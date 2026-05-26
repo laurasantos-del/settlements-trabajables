@@ -12,6 +12,7 @@ debtmanager_login_debug.*
 debtmanager_store.json
 creditor_rules.json
 scraper_meta.json
+tsconfig.tsbuildinfo
 settlements.db
 *.png
 debug_*.html
