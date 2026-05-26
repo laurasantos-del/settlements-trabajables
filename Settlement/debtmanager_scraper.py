@@ -444,14 +444,30 @@ REPORTS = [
 ]
 
 
+CHROME_BIN = os.getenv("CHROME_BIN", "")
+CHROMEDRIVER_BIN = os.getenv("CHROMEDRIVER_BIN", "")
+
+
 def make_driver():
     opts = webdriver.ChromeOptions()
     if HEADLESS:
         opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--disable-gpu")
     opts.add_argument("--window-size=1920,1080")
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
+    opts.add_argument("--remote-debugging-port=9222")
+
+    # In Docker/cloud: use system Chrome set via env vars
+    # Locally: webdriver_manager downloads the right ChromeDriver automatically
+    if CHROME_BIN:
+        opts.binary_location = CHROME_BIN
+    if CHROMEDRIVER_BIN:
+        service = Service(CHROMEDRIVER_BIN)
+    else:
+        service = Service(ChromeDriverManager().install())
+
+    return webdriver.Chrome(service=service, options=opts)
 
 
 def login(driver):

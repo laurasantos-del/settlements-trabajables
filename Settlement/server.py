@@ -215,6 +215,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="DebtFreedom Data Receiver", lifespan=lifespan)
+_EXTRA_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -229,8 +231,13 @@ app.add_middleware(
         "http://localhost:4173",
         "http://127.0.0.1:4173",
         "https://8786zrwt-3000.use2.devtunnels.ms",
+        *_EXTRA_ORIGINS,
     ],
-    allow_origin_regex=r"https://.*\.devtunnels\.ms",
+    allow_origin_regex=(
+        r"https://(.*\.devtunnels\.ms"
+        r"|.*\.vercel\.app"
+        r"|.*\.railway\.app)"
+    ),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
