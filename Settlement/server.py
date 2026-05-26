@@ -1,20 +1,37 @@
+import asyncio
 import json
+import os
+import subprocess
+import sys
+from contextlib import asynccontextmanager
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Column, Integer, MetaData, String, Table, Text, create_engine, delete, func, insert, select
 
 
-app = FastAPI(title="DebtFreedom Data Receiver")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+_cache: Dict[str, Any] = {}
+_cache_loaded = False
+
+_scraper_state: Dict[str, Any] = {
+    "running": False,
+    "pid": None,
+    "last_run": None,
+    "last_error": None,
+    "started_at": None,
+}
+
+DATA_FILE = Path("debtmanager_store.json")
+DB_FILE = Path("settlements.db")
+META_FILE = Path("scraper_meta.json")
+FONDOS_MINIMO = 40
+
+SCRAPER_INTERVAL_HOURS = float(os.getenv("SCRAPER_INTERVAL_HOURS", "6"))
+SCRAPER_AUTO_RUN = os.getenv("SCRAPER_AUTO_RUN", "true").lower() == "true"
+SCRAPER_STALE_HOURS = float(os.getenv("SCRAPER_STALE_HOURS", "6"))
 
 store: Dict[str, List[Any]] = {
     "client_savings_escrow": [],
@@ -33,10 +50,6 @@ store: Dict[str, List[Any]] = {
     "creditor_status": [],
     "debtmanager": [],
 }
-
-DATA_FILE = Path("debtmanager_store.json")
-DB_FILE = Path("settlements.db")
-FONDOS_MINIMO = 40
 
 engine = create_engine(f"sqlite:///{DB_FILE}", connect_args={"check_same_thread": False})
 metadata = MetaData()
@@ -57,32 +70,189 @@ settlements_table = Table(
 metadata.create_all(bind=engine)
 
 
-def load_store_from_disk():
+# ── Persistence helpers ──────────────────────────────────────────────────────
+
+def read_store_file() -> dict:
     if not DATA_FILE.exists():
-        return
+        return {}
     try:
-        saved = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        return json.loads(DATA_FILE.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        return
-    for key in store:
-        if isinstance(saved.get(key), list):
-            store[key] = saved[key]
+        return {}
 
 
-def save_store_to_disk():
+def save_store_to_disk() -> None:
     DATA_FILE.write_text(json.dumps(store, ensure_ascii=False), encoding="utf-8")
 
 
-load_store_from_disk()
+def load_meta() -> dict:
+    if not META_FILE.exists():
+        return {}
+    try:
+        return json.loads(META_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def save_meta(data: dict) -> None:
+    META_FILE.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def is_data_stale() -> bool:
+    meta = load_meta()
+    last = meta.get("last_scrape_success")
+    if not last:
+        return True
+    try:
+        elapsed = (datetime.utcnow() - datetime.fromisoformat(last)).total_seconds()
+        return elapsed > SCRAPER_STALE_HOURS * 3600
+    except Exception:
+        return True
+
+
+# ── Scraper management ───────────────────────────────────────────────────────
+
+async def run_scraper(reports_only: Optional[str] = None) -> dict:
+    if _scraper_state["running"]:
+        return {"ok": False, "message": "El scraper ya está corriendo", "pid": _scraper_state["pid"]}
+
+    _scraper_state["running"] = True
+    _scraper_state["last_error"] = None
+    _scraper_state["started_at"] = datetime.utcnow().isoformat()
+
+    venv_python = Path(".venv/bin/python")
+    python_bin = str(venv_python) if venv_python.exists() else sys.executable
+    cwd = str(Path(__file__).parent)
+
+    env = {**os.environ, "WS_URL": os.getenv("WS_URL", "ws://localhost:8000/ws/data")}
+    if reports_only:
+        env["REPORTS_ONLY"] = reports_only
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            python_bin, "debtmanager_scraper.py",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+            cwd=cwd,
+            env=env,
+        )
+        _scraper_state["pid"] = proc.pid
+        print(f"[Scraper] Iniciado — PID {proc.pid}", flush=True)
+
+        stdout, _ = await proc.communicate()
+        output = stdout.decode(errors="replace") if stdout else ""
+
+        if proc.returncode == 0:
+            ts = datetime.utcnow().isoformat()
+            _scraper_state["last_run"] = ts
+            meta = load_meta()
+            meta["last_scrape_success"] = ts
+            save_meta(meta)
+            print(f"[Scraper] Completado exitosamente ({ts})", flush=True)
+        else:
+            _scraper_state["last_error"] = output[-1000:]
+            print(f"[Scraper] Terminó con error — código {proc.returncode}", flush=True)
+            print(output[-500:], flush=True)
+
+    except Exception as exc:
+        _scraper_state["last_error"] = str(exc)
+        print(f"[Scraper] Excepción: {exc}", flush=True)
+    finally:
+        _scraper_state["running"] = False
+        _scraper_state["pid"] = None
+
+    return {"ok": _scraper_state["last_error"] is None}
+
+
+async def periodic_scraper_loop() -> None:
+    interval = SCRAPER_INTERVAL_HOURS * 3600
+    print(f"[Scraper] Recarga periódica cada {SCRAPER_INTERVAL_HOURS}h", flush=True)
+    while True:
+        await asyncio.sleep(interval)
+        print(f"[Scraper] Ejecución periódica programada", flush=True)
+        await run_scraper()
+
+
+# ── Lifespan ─────────────────────────────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global _cache, _cache_loaded
+
+    # Load persisted data
+    try:
+        saved = read_store_file()
+        for key in store:
+            if isinstance(saved.get(key), list):
+                store[key] = saved[key]
+        _cache = {key: store.get(key, []) for key in store}
+        for key, value in saved.items():
+            if key not in _cache:
+                _cache[key] = value
+        _cache_loaded = True
+        total = sum(len(v) for v in _cache.values() if isinstance(v, list))
+        print(f"[Cache] {total} registros cargados desde disco", flush=True)
+    except Exception as exc:
+        print(f"[Cache] Error al cargar: {exc}", flush=True)
+
+    # Auto-run scraper if stale or empty
+    total_records = sum(len(v) for v in _cache.values() if isinstance(v, list))
+    if SCRAPER_AUTO_RUN and (total_records == 0 or is_data_stale()):
+        reason = "sin datos" if total_records == 0 else f"datos obsoletos (>{SCRAPER_STALE_HOURS}h)"
+        print(f"[Scraper] Auto-inicio — {reason}", flush=True)
+        asyncio.create_task(run_scraper())
+
+    # Start periodic refresh background task
+    periodic_task = asyncio.create_task(periodic_scraper_loop())
+
+    yield
+
+    periodic_task.cancel()
+    try:
+        await periodic_task
+    except asyncio.CancelledError:
+        pass
+
+
+app = FastAPI(title="DebtFreedom Data Receiver", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002",
+        "http://127.0.0.1:3003",
+        "http://localhost:4173",
+        "http://127.0.0.1:4173",
+        "https://8786zrwt-3000.use2.devtunnels.ms",
+    ],
+    allow_origin_regex=r"https://.*\.devtunnels\.ms",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 connected_clients: List[WebSocket] = []
 
 
-def clean_text(value):
+# ── Utility functions ────────────────────────────────────────────────────────
+
+def clean_text(value) -> str:
     return str(value or "").strip()
 
 
-def money_to_number(value):
+def is_valid_client_id(client_id: str) -> bool:
+    """Client IDs in DebtManager are 5-9 digit numbers."""
+    s = client_id.strip()
+    return s.isdigit() and 4 <= len(s) <= 10
+
+
+def money_to_number(value) -> float:
     if isinstance(value, (int, float)):
         return float(value)
     cleaned = (
@@ -109,7 +279,7 @@ def row_value(row, *names):
     return ""
 
 
-def build_savings_index():
+def build_savings_index() -> dict:
     index = {}
     for row in store["client_savings_escrow"]:
         key = clean_text(
@@ -129,7 +299,7 @@ def build_savings_index():
     return index
 
 
-def build_settlement_clients():
+def build_settlement_clients() -> list:
     savings_index = build_savings_index()
     clients = {}
 
@@ -141,6 +311,11 @@ def build_settlement_clients():
         client_id = clean_text(row_value(row, "Client ID"))
         client_name = clean_text(row_value(row, "Client Name"))
         sid = clean_text(row_value(row, "Sid"))
+
+        # Skip navigation/garbage rows scraped from DebtManager HTML
+        if client_id and not is_valid_client_id(client_id):
+            continue
+
         key = (client_id or sid or client_name).lower()
         if not key:
             continue
@@ -188,6 +363,8 @@ def build_settlement_clients():
         client_id = clean_text(row_value(row, "Client ID", "ClientServiceID"))
         client_name = clean_text(row_value(row, "Client Name"))
         sid = clean_text(row_value(row, "Sid"))
+        if client_id and not is_valid_client_id(client_id):
+            continue
         key = (client_id or sid or client_name).lower()
         if not key or key in clients:
             continue
@@ -205,7 +382,7 @@ def build_settlement_clients():
     return list(clients.values())
 
 
-def save_settlements_report(report_date=None):
+def save_settlements_report(report_date=None) -> int:
     clients = build_settlement_clients()
     if not clients:
         return 0
@@ -232,7 +409,7 @@ def save_settlements_report(report_date=None):
     return len(rows)
 
 
-def settlement_row_to_client(row):
+def settlement_row_to_client(row) -> dict:
     mapping = row._mapping
     listas = json.loads(mapping["deudas_listas"] or "[]")
     pendientes = json.loads(mapping["deudas_pendientes"] or "[]")
@@ -255,11 +432,24 @@ def latest_report_date(connection):
     return connection.execute(select(func.max(settlements_table.c.fecha))).scalar_one_or_none()
 
 
+def cached_records(bucket: str) -> list:
+    records = _cache.get(bucket, [])
+    return records if isinstance(records, list) else []
+
+
+def data_response(bucket: str, report: str, response: Response) -> dict:
+    records = cached_records(bucket)
+    response.headers["X-Cache"] = "HIT"
+    return {"report": report, "count": len(records), "records": records}
+
+
+# ── WebSocket ────────────────────────────────────────────────────────────────
+
 @app.websocket("/ws/data")
 async def websocket_data(websocket: WebSocket):
     await websocket.accept()
     connected_clients.append(websocket)
-    print(f"[WS] Cliente conectado - {websocket.client}")
+    print(f"[WS] Cliente conectado — {websocket.client}", flush=True)
     try:
         while True:
             raw = await websocket.receive_text()
@@ -273,155 +463,238 @@ async def websocket_data(websocket: WebSocket):
                 await websocket.send_text(json.dumps({"event": "pong", "ts": ts}))
                 continue
 
+            if event == "start":
+                report_name = data.get("report", source) if isinstance(data, dict) else source
+                bucket = report_name if report_name in store else ("debtmanager" if source not in store else source)
+                store[bucket] = []
+                _cache[bucket] = store[bucket]
+                # NOTE: do NOT save to disk on every start — too expensive at 69 MB
+                print(f"  [{bucket}] Reiniciado para nueva extracción", flush=True)
+                await websocket.send_text(
+                    json.dumps({
+                        "event": "start_ack",
+                        "source": source,
+                        "bucket": bucket,
+                        "count": 0,
+                    })
+                )
+                continue
+
             if event == "batch":
                 records = data if isinstance(data, list) else [data]
                 sub_report = records[0].get("_report", "") if records else ""
                 bucket = sub_report if sub_report in store else ("debtmanager" if source not in store else source)
                 store[bucket].extend(records)
-                save_store_to_disk()
+                _cache[bucket] = store[bucket]
+                # NOTE: do NOT save to disk on every batch — too expensive at 69 MB.
+                # Disk write happens once in the 'done' event.
                 count = len(store[bucket])
-                print(f"  [{bucket}] +{len(records)} registros -> total: {count}")
+                print(f"  [{bucket}] +{len(records)} registros → total: {count}", flush=True)
                 await websocket.send_text(
-                    json.dumps(
-                        {
-                            "event": "ack",
-                            "source": source,
-                            "bucket": bucket,
-                            "count": count,
-                        }
-                    )
+                    json.dumps({
+                        "event": "ack",
+                        "source": source,
+                        "bucket": bucket,
+                        "count": count,
+                    })
                 )
 
             elif event == "done":
                 report_name = data.get("report", source)
                 bucket = report_name if report_name in store else "debtmanager"
                 total = len(store.get(bucket, []))
+                _cache[bucket] = store.get(bucket, [])
+
+                # Persist JSON to disk once per report (not per batch)
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, save_store_to_disk)
+
                 saved_clients = save_settlements_report()
-                print(f"  [{bucket}] Finalizado - {total} registros totales")
-                print(f"  [settlements] Reporte persistido - {saved_clients} clientes")
+                print(f"  [{bucket}] Finalizado — {total} registros", flush=True)
+                print(f"  [settlements] {saved_clients} clientes persistidos", flush=True)
                 await websocket.send_text(
-                    json.dumps(
-                        {
-                            "event": "done_ack",
-                            "source": source,
-                            "bucket": bucket,
-                            "total": total,
-                            "settlements_saved": saved_clients,
-                        }
-                    )
+                    json.dumps({
+                        "event": "done_ack",
+                        "source": source,
+                        "bucket": bucket,
+                        "total": total,
+                        "settlements_saved": saved_clients,
+                    })
                 )
 
     except WebSocketDisconnect:
         if websocket in connected_clients:
             connected_clients.remove(websocket)
-        print("[WS] Cliente desconectado")
+        print("[WS] Cliente desconectado", flush=True)
 
+
+# ── Data endpoints ───────────────────────────────────────────────────────────
 
 @app.get("/data/client-savings-escrow")
-def get_client_savings():
-    data = store["client_savings_escrow"]
-    return {"report": "CLIENT SAVINGS/ESCROW REPORT", "count": len(data), "records": data}
+def get_client_savings(response: Response):
+    return data_response("client_savings_escrow", "CLIENT SAVINGS/ESCROW REPORT", response)
 
 
 @app.get("/data/negotiator-escrow")
-def get_negotiator_escrow():
-    data = store["negotiator_escrow"]
-    return {"report": "NEGOTIATOR/ESCROW REPORT", "count": len(data), "records": data}
+def get_negotiator_escrow(response: Response):
+    return data_response("negotiator_escrow", "NEGOTIATOR/ESCROW REPORT", response)
 
 
 @app.get("/data/client-interactions")
-def get_client_interactions():
-    data = store["client_interactions"]
-    return {"report": "CLIENT INTERACTIONS REPORT", "count": len(data), "records": data}
+def get_client_interactions(response: Response):
+    return data_response("client_interactions", "CLIENT INTERACTIONS REPORT", response)
 
 
 @app.get("/data/expected-client-payments")
-def get_expected_client_payments():
-    data = store["expected_client_payments"]
-    return {"report": "EXPECTED CLIENT PAYMENTS REPORT", "count": len(data), "records": data}
+def get_expected_client_payments(response: Response):
+    return data_response("expected_client_payments", "EXPECTED CLIENT PAYMENTS REPORT", response)
 
 
 @app.get("/data/settlement-payment-report")
-def get_settlement_payment_report():
-    data = store["settlement_payment_report"]
-    return {"report": "SETTLEMENT PAYMENT REPORT", "count": len(data), "records": data}
+def get_settlement_payment_report(response: Response):
+    return data_response("settlement_payment_report", "SETTLEMENT PAYMENT REPORT", response)
 
 
 @app.get("/data/new-enrollments")
-def get_new_enrollments():
-    data = store["new_enrollments"]
-    return {"report": "NEW ENROLLMENTS", "count": len(data), "records": data}
+def get_new_enrollments(response: Response):
+    return data_response("new_enrollments", "NEW ENROLLMENTS", response)
 
 
 @app.get("/data/settlements-per-date")
-def get_settlements_per_date():
-    data = store["settlements_per_date"]
-    return {"report": "SETTLED CLIENTS PER DATE", "count": len(data), "records": data}
+def get_settlements_per_date(response: Response):
+    return data_response("settlements_per_date", "SETTLED CLIENTS PER DATE", response)
 
 
 @app.get("/data/payments-cleared")
-def get_payments_cleared():
-    data = store["payments_cleared"]
-    return {"report": "PAYMENTS CLEARED REPORT", "count": len(data), "records": data}
+def get_payments_cleared(response: Response):
+    return data_response("payments_cleared", "PAYMENTS CLEARED REPORT", response)
 
 
 @app.get("/data/commissions")
-def get_commissions():
-    data = store["commissions"]
-    return {"report": "COMMISSION REPORT", "count": len(data), "records": data}
+def get_commissions(response: Response):
+    return data_response("commissions", "COMMISSION REPORT", response)
 
 
 @app.get("/data/projected-fees")
-def get_projected_fees():
-    data = store["projected_fees"]
-    return {"report": "PROJECTED FEES REPORT", "count": len(data), "records": data}
+def get_projected_fees(response: Response):
+    return data_response("projected_fees", "PROJECTED FEES REPORT", response)
 
 
 @app.get("/data/payment-nsf")
-def get_payment_nsf():
-    data = store["payment_nsf"]
-    return {"report": "PAYMENT NSF REPORT", "count": len(data), "records": data}
+def get_payment_nsf(response: Response):
+    return data_response("payment_nsf", "PAYMENT NSF REPORT", response)
 
 
 @app.get("/data/summary-report")
-def get_summary_report():
-    data = store["summary_report"]
-    return {"report": "SUMMARY REPORT", "count": len(data), "records": data}
+def get_summary_report(response: Response):
+    return data_response("summary_report", "SUMMARY REPORT", response)
 
 
 @app.get("/data/suspended-payments")
-def get_suspended_payments():
-    data = store["suspended_payments"]
-    return {"report": "SUSPENDED PAYMENT PLANS REPORT", "count": len(data), "records": data}
+def get_suspended_payments(response: Response):
+    return data_response("suspended_payments", "SUSPENDED PAYMENT PLANS REPORT", response)
 
 
 @app.get("/data/creditor-status")
-def get_creditor_status():
-    data = store["creditor_status"]
-    return {"report": "CREDITOR STATUS REPORT", "count": len(data), "records": data}
+def get_creditor_status(response: Response):
+    return data_response("creditor_status", "CREDITOR STATUS REPORT", response)
 
 
 @app.get("/data/summary")
-def summary():
+def summary(response: Response):
+    response.headers["X-Cache"] = "HIT"
+    meta = load_meta()
     return {
-        "client_savings_escrow": len(store["client_savings_escrow"]),
-        "negotiator_escrow": len(store["negotiator_escrow"]),
-        "client_interactions": len(store["client_interactions"]),
-        "expected_client_payments": len(store["expected_client_payments"]),
-        "settlement_payment_report": len(store["settlement_payment_report"]),
-        "new_enrollments": len(store["new_enrollments"]),
-        "settlements_per_date": len(store["settlements_per_date"]),
-        "payments_cleared": len(store["payments_cleared"]),
-        "commissions": len(store["commissions"]),
-        "projected_fees": len(store["projected_fees"]),
-        "payment_nsf": len(store["payment_nsf"]),
-        "summary_report": len(store["summary_report"]),
-        "suspended_payments": len(store["suspended_payments"]),
-        "creditor_status": len(store["creditor_status"]),
-        "debtmanager": len(store["debtmanager"]),
+        "client_savings_escrow": len(cached_records("client_savings_escrow")),
+        "negotiator_escrow": len(cached_records("negotiator_escrow")),
+        "client_interactions": len(cached_records("client_interactions")),
+        "expected_client_payments": len(cached_records("expected_client_payments")),
+        "settlement_payment_report": len(cached_records("settlement_payment_report")),
+        "new_enrollments": len(cached_records("new_enrollments")),
+        "settlements_per_date": len(cached_records("settlements_per_date")),
+        "payments_cleared": len(cached_records("payments_cleared")),
+        "commissions": len(cached_records("commissions")),
+        "projected_fees": len(cached_records("projected_fees")),
+        "payment_nsf": len(cached_records("payment_nsf")),
+        "summary_report": len(cached_records("summary_report")),
+        "suspended_payments": len(cached_records("suspended_payments")),
+        "creditor_status": len(cached_records("creditor_status")),
+        "debtmanager": len(cached_records("debtmanager")),
+        "cache_loaded": _cache_loaded,
+        "last_scrape": meta.get("last_scrape_success"),
         "last_updated": datetime.utcnow().isoformat(),
     }
 
+
+# ── Cache endpoints ──────────────────────────────────────────────────────────
+
+@app.post("/cache/refresh")
+async def refresh_cache():
+    global _cache, _cache_loaded
+    saved = read_store_file()
+    for key in store:
+        if isinstance(saved.get(key), list):
+            store[key] = saved[key]
+    _cache = {key: store.get(key, []) for key in store}
+    for key, value in saved.items():
+        if key not in _cache:
+            _cache[key] = value
+    _cache_loaded = True
+    counts = {key: len(value) for key, value in _cache.items() if isinstance(value, list)}
+    return {"ok": True, "counts": counts}
+
+
+@app.delete("/data/clear")
+def clear_all():
+    for key in store:
+        store[key].clear()
+        _cache[key] = store[key]
+    save_store_to_disk()
+    return {"message": "Store limpiado"}
+
+
+@app.delete("/data/clear/{bucket}")
+def clear_bucket(bucket: str):
+    if bucket not in store:
+        return {"error": f"Bucket desconocido: {bucket}", "available": list(store.keys())}
+    store[bucket].clear()
+    _cache[bucket] = store[bucket]
+    save_store_to_disk()
+    return {"message": f"Bucket limpiado: {bucket}"}
+
+
+# ── Scraper endpoints ────────────────────────────────────────────────────────
+
+@app.post("/scraper/run")
+async def trigger_scraper(reports_only: str = ""):
+    if _scraper_state["running"]:
+        return {
+            "ok": False,
+            "message": "El scraper ya está corriendo",
+            "pid": _scraper_state["pid"],
+            "started_at": _scraper_state["started_at"],
+        }
+    asyncio.create_task(run_scraper(reports_only or None))
+    return {"ok": True, "message": "Scraper iniciado en background"}
+
+
+@app.get("/scraper/status")
+def scraper_status():
+    meta = load_meta()
+    return {
+        "running": _scraper_state["running"],
+        "pid": _scraper_state["pid"],
+        "started_at": _scraper_state["started_at"],
+        "last_run": _scraper_state["last_run"],
+        "last_error": _scraper_state["last_error"],
+        "last_scrape_success": meta.get("last_scrape_success"),
+        "interval_hours": SCRAPER_INTERVAL_HOURS,
+        "auto_run": SCRAPER_AUTO_RUN,
+        "stale_after_hours": SCRAPER_STALE_HOURS,
+    }
+
+
+# ── Settlement endpoints ─────────────────────────────────────────────────────
 
 @app.get("/settlements")
 def get_latest_settlements():
@@ -461,22 +734,7 @@ def refresh_settlements():
     return {"ok": True, "saved_clients": saved_clients}
 
 
-@app.delete("/data/clear")
-def clear_all():
-    for key in store:
-        store[key].clear()
-    save_store_to_disk()
-    return {"message": "Store limpiado"}
-
-
-@app.delete("/data/clear/{bucket}")
-def clear_bucket(bucket: str):
-    if bucket not in store:
-        return {"error": f"Bucket desconocido: {bucket}", "available": list(store.keys())}
-    store[bucket].clear()
-    save_store_to_disk()
-    return {"message": f"Bucket limpiado: {bucket}"}
-
+# ── Entry point ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import uvicorn
@@ -485,7 +743,7 @@ if __name__ == "__main__":
         "server:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        reload=False,
         ws_ping_interval=600,
         ws_ping_timeout=600,
     )

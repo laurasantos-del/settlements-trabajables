@@ -32,6 +32,14 @@ NEW_ENROLLMENTS_URL = os.getenv(
     "NEW_ENROLLMENTS_URL",
     f"{DM_BASE}/rpt_new_enrollments_custom.php",
 )
+EXPECTED_CLIENT_PAYMENTS_URL = os.getenv(
+    "EXPECTED_CLIENT_PAYMENTS_URL",
+    f"{DM_BASE}/rpt_expected_client_pmts_custom.php",
+)
+SETTLEMENT_PAYMENT_REPORT_URL = os.getenv(
+    "SETTLEMENT_PAYMENT_REPORT_URL",
+    f"{DM_BASE}/rpt_settlement_pmts_custom.php",
+)
 SETTLEMENTS_PER_DATE_URL = os.getenv(
     "SETTLEMENTS_PER_DATE_URL",
     f"{DM_BASE}/rpt_settlements_per_date.php",
@@ -117,20 +125,83 @@ REPORTS = [
         "name": "client_interactions",
         "title": "CLIENT INTERACTIONS REPORT",
         "url": CLIENT_INTERACTIONS_URL,
-        "columns": [
-            "Client ID",
-            "Client Name",
-            "Client Status",
-            "Sid",
-            "Interaction Date",
-            "Interaction Time",
-            "Interaction Type",
-            "Subject",
-            "Notes",
-            "Created By",
-            "Assigned To",
-            "Follow Up Date",
+        "kendo": True,
+        "kendo_dom": True,
+        "kendo_table": "client",
+        "fields": [
+            ("clientid", "Client ID"),
+            ("firstname", "First Name"),
+            ("lastname", "Last Name"),
+            ("gender", "Gender"),
+            ("client_age", "Client Age"),
+            ("address", "Address"),
+            ("city", "City"),
+            ("state", "State"),
+            ("postal", "Postal"),
+            ("phone", "Phone"),
+            ("mobile", "Mobile"),
+            ("work", "Work"),
+            ("sid", "SSN"),
+            ("email", "Email"),
+            ("speaks_spanish", "Speaks Spanish"),
+            ("date_of_birth", "Date Of Birth"),
+            ("payroll_schedule", "Payroll Schedule"),
+            ("day_of_month1", "Day Of month 1"),
+            ("day_of_month2", "Day Of month 2"),
+            ("coapplicant_name", "Co-applicant name"),
+            ("coapp_ssn", "Co-app ssn"),
+            ("coapp_zip", "Co-app zip"),
+            ("programid", "Program"),
+            ("client_status", "Client Status"),
+            ("file_status", "File Status"),
+            ("days_in_client_status", "Days In Client Status"),
+            ("days_in_file_status", "Days In File Status"),
+            ("cftpay_escrow_balance", "CFTPay Escrow Balance"),
+            ("company_bank_balance", "Company Bank Balance"),
+            ("enrolled_date", "Enrollment Date"),
+            ("monthly_payment_date", "Monthly Payment Date"),
+            ("monthly_payment_amt", "Monthly Payment Amount"),
+            ("nbr_months", "Total Number of Months"),
+            ("initial_pmt_dt", "Initial Payment Date($50)"),
+            ("first_pmt_dt", "First Payment Date (Remainder Or full Amount)"),
+            ("scheduled_welcomecall", "Welcome Call Schedule"),
+            ("completed_welcomecall", "Welcome Call Completion Date"),
+            ("last_pmt_dt", "Last Payment Date"),
+            ("pmt_months_completed", "Payment Months Completed"),
+            ("pmt_months_skipped", "Payment Months Skipped"),
+            ("pmt_months_nsf", "Payment Months NSF"),
+            ("pmt_months_pending", "Payment Months Remaining"),
+            ("enrolled_creditors", "Total Number of Accounts Enrolled"),
+            ("total_debt", "Total Enrolled Debt"),
+            ("settlement_fee_percentage", "Settlement Fee Percentage"),
+            ("cs_rep", "CS Rep"),
+            ("sales_rep", "Sales Rep"),
+            ("veritas_plan", "Prepaid Legal"),
+            ("cftpay_account_id", "CFTPay Account"),
+            ("loan_program", "Loan Program"),
+            ("cancellation_reasons", "Cancellation Reasons"),
+            ("veritas_type", "Veritas Type"),
+            ("enrollment_fee_spread", "Enrollment Fee Spread"),
+            ("settlement_fee", "Settlement Fee"),
+            ("veritas_monthly_fee", "Veritas Monthly Fee"),
+            ("bank_fee", "Bank Fee"),
+            ("reduced_debt_amt", "Reduced Debt Amount"),
+            ("total_savings", "Total Savings"),
+            ("next_schedulled_payment_dt", "Next Schedulled Payment Date"),
+            ("final_draft_date", "Final Draft Date"),
+            ("last_note_date", "Last Note Date"),
+            ("last_note", "Last Note"),
+            ("open_tasks", "Number Of Tasks Outstanding"),
+            ("closed_tasks", "Number Of Tasks Completed"),
+            ("last_nsf_date", "Last NSF Date"),
+            ("bank_name", "Bank Name"),
+            ("bank_routing_nbr", "Bank Routing Nbr"),
+            ("bank_account_nbr", "Bank Account Nbr"),
+            ("debit_card_nbr", "Debit Card Nbr"),
+            ("ExpDate", "Expiration Date"),
+            ("CVV", "CVV"),
         ],
+        "columns": [],
     },
     {
         "name": "new_enrollments",
@@ -156,6 +227,59 @@ REPORTS = [
             ("oprid_salesrep", "Debt Consultant"),
             ("programid", "Program"),
             ("dt_client_id", "Lead ID"),
+        ],
+        "columns": [],
+    },
+    {
+        "name": "expected_client_payments",
+        "title": "EXPECTED CLIENT PAYMENTS REPORT",
+        "url": EXPECTED_CLIENT_PAYMENTS_URL,
+        "kendo": True,
+        "kendo_dom": True,
+        "kendo_table": "client",
+        "fields": [
+            ("clientid", "Client ID"),
+            ("firstname", "First Name"),
+            ("lastname", "Last Name"),
+            ("client_status", "Client Status"),
+            ("client_status_dt", "Days In Client Status"),
+            ("file_status", "File Status"),
+            ("file_status_dt", "Days In File Status"),
+            ("state", "State"),
+            ("fst_draft", "First Draft"),
+            ("effdt", "Scheduled Draft Date"),
+            ("amount", "Amount"),
+            ("payment_status", "Payment Status"),
+            ("pend_date", "Pending Draft Date"),
+            ("processed_date", "Processed Draft Date"),
+        ],
+        "columns": [],
+    },
+    {
+        "name": "settlement_payment_report",
+        "title": "SETTLEMENT PAYMENT REPORT",
+        "url": SETTLEMENT_PAYMENT_REPORT_URL,
+        "kendo": True,
+        "kendo_dom": True,
+        "kendo_table": "client",
+        "fields": [
+            ("programid", "Program"),
+            ("clientid", "Client ID"),
+            ("firstname", "Firstname"),
+            ("lastname", "Lastname"),
+            ("client_creditor_id", "Current Creditor"),
+            ("payment_number", "Payment Number"),
+            ("cleared_payments", "Completed Payments"),
+            ("total_payments", "Total Number Of Payments"),
+            ("effdt", "Due Date"),
+            ("amount", "Amount"),
+            ("used", "Payment Status"),
+            ("payment_type", "Method"),
+            ("file_status", "File Status"),
+            ("client_status", "Accouting Status"),
+            ("debt_total", "Total Debt"),
+            ("balance", "Balance"),
+            ("balance_current", "Balance Current"),
         ],
         "columns": [],
     },
@@ -187,6 +311,7 @@ REPORTS = [
         "title": "PAYMENTS CLEARED REPORT",
         "url": PAYMENTS_CLEARED_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Client ID"),
@@ -297,6 +422,7 @@ REPORTS = [
         "title": "CREDITOR STATUS REPORT",
         "url": CREDITOR_STATUS_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client_creditor",
         "fields": [
             ("clientid", "Client ID"),
@@ -356,24 +482,46 @@ def save_login_diagnostics(driver):
 
 
 def extract_rows_once(driver, report_name, fallback_cols, page):
-    headers = [
-        th.text.strip()
-        for th in driver.find_elements(By.CSS_SELECTOR, "table thead th")
-        if th.text.strip()
-    ]
+    table = driver.execute_script(
+        """
+        const tables = Array.from(document.querySelectorAll('table'));
+        let best = null;
+        for (const table of tables) {
+          const rows = Array.from(table.querySelectorAll('tbody tr'));
+          const bodyRows = rows
+            .map(tr => Array.from(tr.querySelectorAll('td')).map(td => (td.innerText || td.textContent || '').replace(/\\s+/g, ' ').trim()))
+            .filter(cells => cells.some(Boolean));
+          if (!bodyRows.length) continue;
+          const headers = Array.from(table.querySelectorAll('thead th'))
+            .map(th => (th.innerText || th.textContent || '').replace(/\\s+/g, ' ').trim())
+            .filter(Boolean);
+          if (!best || bodyRows.length > best.rows.length) best = {headers, rows: bodyRows};
+        }
+        return best || {headers: [], rows: []};
+        """
+    )
+    headers = table.get("headers") or []
     if not headers:
         headers = fallback_cols
 
     records = []
-    for row in driver.find_elements(By.CSS_SELECTOR, "table tbody tr"):
-        cells = row.find_elements(By.TAG_NAME, "td")
+    for cells in table.get("rows") or []:
         if not cells:
             continue
         record = {"_report": report_name, "_page": page}
-        for index, cell in enumerate(cells):
+        for index, value in enumerate(cells):
             key = headers[index] if index < len(headers) else f"col_{index}"
-            record[key] = cell.text.strip()
-        if report_name == "client_interactions" and not record.get("Client ID", "").isdigit():
+            record[key] = value
+        # Filter garbage rows (navigation text, headers, empty rows)
+        # For reports where Client ID is the first column, skip non-numeric IDs
+        client_id_reports = {"client_interactions", "client_savings_escrow", "negotiator_escrow", "commissions"}
+        if report_name in client_id_reports:
+            cid = str(record.get("Client ID") or record.get("User ID") or "").strip()
+            if cid and not cid.isdigit():
+                continue
+        # Skip any row where the first cell is suspiciously long (navigation menus)
+        first_cell = cells[0] if cells else ""
+        if len(first_cell) > 80:
             continue
         records.append(record)
     return records
@@ -423,6 +571,17 @@ class WebSocketReportSender:
                     "source": "debtmanager",
                     "event": "ping",
                     "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+        )
+        await self.ws.recv()
+        await self.ws.send(
+            json.dumps(
+                {
+                    "source": "debtmanager",
+                    "event": "start",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "data": {"report": self.report_name},
                 }
             )
         )
@@ -486,6 +645,21 @@ def parse_jsonp(text):
     return json.loads(match.group(1))
 
 
+def get_kendo_payload(session, url, params, attempts=4):
+    last_error = None
+    for attempt in range(1, attempts + 1):
+        try:
+            response = session.get(url, params=params, timeout=90)
+            response.raise_for_status()
+            return parse_jsonp(response.text)
+        except Exception as exc:
+            last_error = exc
+            wait = min(2 * attempt, 8)
+            print(f"  Reintento Kendo {attempt}/{attempts} en {wait}s: {exc}")
+            time.sleep(wait)
+    raise RuntimeError(f"No pude leer Kendo despues de {attempts} intentos: {last_error}")
+
+
 def current_month_range():
     today = date.today()
     return today.replace(day=1).isoformat(), today.isoformat()
@@ -498,16 +672,49 @@ def settlements_per_date_range():
     )
 
 
+def new_enrollments_date_range():
+    today = date.today().isoformat()
+    return os.getenv("NEW_ENROLLMENTS_START", today), os.getenv("NEW_ENROLLMENTS_END", today)
+
+
 def summary_key(section, label):
     key = re.sub(r"\s*\[\s*detail\s*\]\s*", "", label, flags=re.I).strip()
     key = re.sub(r"\s+", " ", key)
     return f"{section} - {key}" if section else key
 
 
+def looks_like_date(value):
+    text = str(value or "").strip()
+    return bool(
+        re.match(r"^\d{4}-\d{2}-\d{2}", text)
+        or re.match(r"^\d{1,2}/\d{1,2}/\d{2,4}", text)
+    )
+
+
+def normalize_new_enrollment_record(record):
+    enroll_date = str(record.get("Enroll Date", "")).strip()
+    lead_number = str(record.get("Lead Number", "")).strip()
+    status_date = str(record.get("Status Date", "")).strip()
+    report_date = str(record.get("Report Date End") or record.get("Report Date Start") or "").strip()
+    if enroll_date == lead_number or enroll_date.isdigit() or not looks_like_date(enroll_date):
+        if status_date:
+            record["Enroll Date"] = status_date
+        elif report_date:
+            record["Enroll Date"] = report_date
+    return record
+
+
 def kendo_record(report, row, page):
     record = {"_report": report["name"], "_page": page}
     for field, label in report["fields"]:
         record[label] = row.get(field, "")
+    if report["name"] == "new_enrollments":
+        date_start, date_end = report.get("_date_range", ("", ""))
+        if date_start:
+            record["Report Date Start"] = date_start
+        if date_end:
+            record["Report Date End"] = date_end
+        normalize_new_enrollment_record(record)
     return record
 
 
@@ -519,6 +726,11 @@ async def scrape_kendo_report(driver, report, sender=None):
     print(f"  URL: {report['url']}")
     driver.get(report["url"])
     time.sleep(1.0)
+
+    if report["name"] == "new_enrollments":
+        date_start, date_end = new_enrollments_date_range()
+        report["_date_range"] = (date_start, date_end)
+        print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
 
     if report["name"] == "settlements_per_date":
         date_start, date_end = settlements_per_date_range()
@@ -544,7 +756,11 @@ async def scrape_kendo_report(driver, report, sender=None):
             return [] if not sender else 0
 
     session = make_session_from_driver(driver)
-    page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", "40"))
+    if report["name"] == "new_enrollments":
+        date_start, date_end = report.get("_date_range", new_enrollments_date_range())
+        session.post(report["url"], data={"date_start": date_start, "date_end": date_end, "Enter": "Enter"}, timeout=30)
+
+    page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", os.getenv("KENDO_PAGE_SIZE", "200")))
     max_pages = max_pages_for(report["name"])
     total_sent = 0
     all_records = []
@@ -560,8 +776,7 @@ async def scrape_kendo_report(driver, report, sender=None):
             "skip": skip,
             "take": page_size,
         }
-        response = session.get(report["url"], params=params, timeout=60)
-        payload = parse_jsonp(response.text)
+        payload = get_kendo_payload(session, report["url"], params)
         rows = payload.get("results", [])
         total = int(payload.get("count") or 0)
         batch = [kendo_record(report, row, page) for row in rows]
@@ -592,12 +807,23 @@ def extract_kendo_dom_rows(driver, report_name, page):
         const rows = Array.from(document.querySelectorAll('#grid .k-grid-content tbody tr'))
           .map(tr => Array.from(tr.querySelectorAll('td')).map(td => (td.innerText || td.textContent || '').trim()))
           .filter(cells => cells.length);
-        return {headers, rows};
+        const pager = (document.querySelector('.k-pager-info')?.innerText || '').trim();
+        return {headers, rows, pager};
         """
     )
     headers = grid.get("headers") or []
+    pager = grid.get("pager") or ""
+    expected_count = None
+    match = re.search(r"(\d+)\s*-\s*(\d+)\s+of\s+(\d+)", pager)
+    if match:
+        start, end, _total = [int(part) for part in match.groups()]
+        expected_count = max(0, end - start + 1)
+
     records = []
-    for cells in grid.get("rows") or []:
+    rows = grid.get("rows") or []
+    if expected_count is not None:
+        rows = rows[:expected_count]
+    for cells in rows:
         record = {"_report": report_name, "_page": page}
         for index, value in enumerate(cells):
             key = headers[index] if index < len(headers) else f"col_{index}"
@@ -612,7 +838,7 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
     driver.get(report["url"])
     wait = WebDriverWait(driver, 30)
     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
-    page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", "40"))
+    page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", os.getenv("KENDO_PAGE_SIZE", "200")))
     if page_size != 40:
         driver.execute_script('jQuery("#grid").data("kendoGrid").dataSource.pageSize(arguments[0]);', page_size)
         time.sleep(3.0)
@@ -819,6 +1045,17 @@ async def send_report(records, report_name):
                     "source": "debtmanager",
                     "event": "ping",
                     "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+        )
+        await ws.recv()
+        await ws.send(
+            json.dumps(
+                {
+                    "source": "debtmanager",
+                    "event": "start",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "data": {"report": report_name},
                 }
             )
         )

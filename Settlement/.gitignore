@@ -5,8 +5,13 @@ __pycache__/
 *.log
 .DS_Store
 *.swp
+.next/
+node_modules/
+out/
 debtmanager_login_debug.*
 debtmanager_store.json
+creditor_rules.json
+scraper_meta.json
 settlements.db
 *.png
 debug_*.html

@@ -6,6 +6,8 @@
 # Datos generados por el scraper
 esig_library_data.csv
 *.csv
+!samples/
+!samples/*.csv
 
 # Logs
 esig_scraper.log
@@ -14,6 +16,7 @@ esig_scraper.log
 # JSON generados
 esig_changes_log.json
 hubspot_tickets_created.json
+loa_dry_run_results.json
 
 # HTML de debug
 debug_debttrakker_response.html
