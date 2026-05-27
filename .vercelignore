@@ -1,0 +1,11 @@
+debtmanager_*.html
+debug_*.html
+live_*.html
+*.png
+.venv/
+__pycache__/
+*.py
+debtmanager_store.json
+settlements.db
+.env
+requirements.txt
