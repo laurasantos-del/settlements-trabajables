@@ -1,5 +1,5 @@
-import { FinanceOverview } from "@/components/finance/finance-overview";
+import { FinanceOverviewPage } from "@/components/crm";
 
 export default function Page() {
-  return <FinanceOverview />;
+  return <FinanceOverviewPage />;
 }

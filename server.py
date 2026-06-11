@@ -12,6 +12,18 @@ from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Column, Integer, MetaData, String, Table, Text, create_engine, delete, func, insert, select
 
+# Make Reportes/ importable (sibling in dev, /Reportes in Docker).
+def _reportes_dir() -> Path:
+    base = Path(__file__).resolve().parent
+    for candidate in (base.parent / "Reportes", base / "Reportes"):
+        if (candidate / "ticket_api.py").exists():
+            return candidate
+    return base.parent / "Reportes"
+
+
+sys.path.insert(0, str(_reportes_dir()))
+import ticket_api  # noqa: E402
+
 
 _cache: Dict[str, Any] = {}
 _cache_loaded = False
@@ -244,6 +256,8 @@ app.add_middleware(
         "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
         "http://127.0.0.1:3003",
+        "http://localhost:4000",
+        "http://127.0.0.1:4000",
         "http://localhost:4173",
         "http://127.0.0.1:4173",
         "https://8786zrwt-3000.use2.devtunnels.ms",
@@ -571,6 +585,58 @@ def get_client_interactions(response: Response):
 @app.get("/data/expected-client-payments")
 def get_expected_client_payments(response: Response):
     return data_response("expected_client_payments", "EXPECTED CLIENT PAYMENTS REPORT", response)
+
+
+# ---------------------------------------------------------------------------
+# Ticket review & send  (NSF and CS/BO) + tomorrow's payments
+# ---------------------------------------------------------------------------
+from pydantic import BaseModel  # noqa: E402
+
+
+class CreateTicketsBody(BaseModel):
+    tickets: list[dict]
+
+
+@app.get("/tickets/{kind}/preview")
+def tickets_preview(kind: str):
+    if kind == "nsf":
+        return {"tickets": ticket_api.preview_nsf()}
+    if kind == "csbo":
+        return {"tickets": ticket_api.preview_csbo()}
+    return {"tickets": [], "error": f"unknown kind '{kind}'"}
+
+
+@app.post("/tickets/{kind}/create")
+def tickets_create(kind: str, body: CreateTicketsBody):
+    if kind not in ("nsf", "csbo"):
+        return {"results": [], "error": f"unknown kind '{kind}'"}
+    results = ticket_api.create_tickets(kind, body.tickets)
+    return {"results": results}
+
+
+@app.get("/tickets/{kind}/created-today")
+def tickets_created_today(kind: str):
+    conn = ticket_api.connect()
+    try:
+        return {"tickets": ticket_api.created_today(conn, kind)}
+    finally:
+        conn.close()
+
+
+@app.post("/tickets/nsf/refresh")
+async def tickets_nsf_refresh():
+    """Re-scrape the NSF report into dm_nsf_last_scrape.json WITHOUT creating
+    tickets (dm_nsf_agent --dry-run scrapes and writes its output only)."""
+    reportes_dir = str(_reportes_dir())
+    asyncio.create_task(asyncio.create_subprocess_exec(
+        sys.executable, "dm_nsf_agent.py", "--dry-run", cwd=reportes_dir,
+    ))
+    return {"ok": True, "message": "NSF refresh started"}
+
+
+@app.get("/payments/tomorrow")
+def payments_tomorrow():
+    return ticket_api.tomorrow_payments()
 
 
 @app.get("/data/settlement-payment-report")

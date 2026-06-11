@@ -1,5 +1,5 @@
-import { CreditorPaymentsDashboard } from "@/components/finance/creditor-payments-dashboard";
+import { CreditorPaymentsOverviewPage } from "@/components/crm";
 
 export default function Page() {
-  return <CreditorPaymentsDashboard />;
+  return <CreditorPaymentsOverviewPage />;
 }

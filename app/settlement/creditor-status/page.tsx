@@ -1,5 +1,5 @@
-import { CreditorStatusDashboard } from "@/components/settlement/settlement-dashboards";
+import { CreditorStatusPage } from "@/components/crm";
 
-export default function CreditorStatusPage() {
-  return <CreditorStatusDashboard />;
+export default function Page() {
+  return <CreditorStatusPage />;
 }

@@ -1,5 +1,5 @@
-import { FutureSettlementsDashboard } from "@/components/settlement/settlement-dashboards";
+import { FuturesPage } from "@/components/crm";
 
 export default function Page() {
-  return <FutureSettlementsDashboard />;
+  return <FuturesPage />;
 }

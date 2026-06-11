@@ -582,9 +582,14 @@ def extract_rows(driver, report_name, fallback_cols, page):
 
 
 def selected_reports():
+    reports = [report.copy() for report in REPORTS]
+    if os.getenv("PAYMENTS_CLEARED_USE_API", "false").lower() == "true":
+        for report in reports:
+            if report.get("name") == "payments_cleared":
+                report["kendo_dom"] = False
     if not REPORTS_ONLY:
-        return REPORTS
-    return [report for report in REPORTS if report.get("name") in REPORTS_ONLY]
+        return reports
+    return [report for report in reports if report.get("name") in REPORTS_ONLY]
 
 
 def max_pages_for(report_name):
@@ -717,7 +722,7 @@ def settlements_per_date_range():
 
 def new_enrollments_date_range():
     today = date.today().isoformat()
-    return os.getenv("NEW_ENROLLMENTS_START", today), os.getenv("NEW_ENROLLMENTS_END", today)
+    return os.getenv("NEW_ENROLLMENTS_START", "2026-01-01"), os.getenv("NEW_ENROLLMENTS_END", today)
 
 
 def summary_key(section, label):

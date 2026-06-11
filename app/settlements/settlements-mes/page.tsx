@@ -1,5 +1,5 @@
-import { MonthlySettlementsDashboard } from "@/components/settlement/settlement-dashboards";
+import { MonthlySettlementsPage } from "@/components/crm";
 
 export default function Page() {
-  return <MonthlySettlementsDashboard />;
+  return <MonthlySettlementsPage />;
 }

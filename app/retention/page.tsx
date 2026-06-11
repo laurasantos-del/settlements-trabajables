@@ -1,5 +1,5 @@
-import { RetentionOverview } from "@/components/retention/lifecycle-dashboard";
+import { RetentionPage } from "@/components/crm";
 
-export default function RetentionPage() {
-  return <RetentionOverview />;
+export default function Page() {
+  return <RetentionPage />;
 }

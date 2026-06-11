@@ -1,5 +1,5 @@
-import { ReconciliationAlerts } from "@/components/finance/reconciliation-alerts";
+import { AlertsPage } from "@/components/crm";
 
 export default function Page() {
-  return <ReconciliationAlerts />;
+  return <AlertsPage />;
 }

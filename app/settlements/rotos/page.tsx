@@ -1,5 +1,5 @@
-import { BrokenSettlements } from "@/components/settlement/settlement-dashboards";
+import { BrokenSettlementPage } from "@/components/crm";
 
 export default function Page() {
-  return <BrokenSettlements />;
+  return <BrokenSettlementPage />;
 }

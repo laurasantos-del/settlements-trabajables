@@ -1,5 +1,5 @@
-import { BrokenSettlementsPage } from "@/components/finance/creditor-payments-crm";
+import { BrokenSettlementPage } from "@/components/crm";
 
 export default function Page() {
-  return <BrokenSettlementsPage />;
+  return <BrokenSettlementPage />;
 }

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web": "next dev -p 4000",
+    "dev:api": "python3 server.py",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -29,6 +31,7 @@
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.2.1",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.23",
     "postcss": "^8.4.49",

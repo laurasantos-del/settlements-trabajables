@@ -1,5 +1,5 @@
-import { ClientDepositDashboard } from "@/components/finance/client-deposit-dashboard";
+import { ClientDepositsPage } from "@/components/crm";
 
 export default function Page() {
-  return <ClientDepositDashboard />;
+  return <ClientDepositsPage />;
 }
