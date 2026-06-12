@@ -1,0 +1,18 @@
+{
+  "tasks": [
+    {
+      "out": "design/settlements-crm.pen",
+      "prompt": "You are redesigning Settlements CRM. Read components/crm.tsx, components/layout/sidebar.tsx, app/globals.css, and components/ui/*. Recreate a clearer, easier-to-understand dark dashboard UI in this .pen file. Start with app shell + Dashboard + Negociables + NSF Tickets screens. Use existing design variables. Group KPIs by category, add section headers, improve table scannability, and design a mobile nav drawer."
+    },
+    {
+      "in": "design/settlements-crm.pen",
+      "out": "design/settlements-crm-finance.pen",
+      "prompt": "Extend the design with Finance module screens: Client Deposits, Creditor Payments Overview, Revenue, and Alerts. Keep visual consistency with the dashboard redesign."
+    },
+    {
+      "in": "design/settlements-crm.pen",
+      "out": "design/settlements-crm-settlement.pen",
+      "prompt": "Extend the design with Settlement module screens: Creditor Status, Monthly Settlements, Futures, Broken, No Posibles, and Settlement Plan. Emphasize risk status colors and actionable columns."
+    }
+  ]
+}
