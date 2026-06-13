@@ -14,6 +14,7 @@ import {
   getSettlementPayments,
   getSettlements,
   getSettlementsPerDate,
+  isFastApiReachable,
   isInRange,
   parseMoney,
   type RecordRow
@@ -248,8 +249,8 @@ function Loader({ error, loading, retry }: { error: boolean; loading: boolean; r
   if (!error) return null;
   return (
     <div className="flex items-center justify-between rounded-[10px] border border-orange-900 bg-orange-950/40 p-4 text-sm text-orange-200">
-      <span>Sin conexión FastAPI</span>
-      <button className="rounded-md border border-orange-800 px-3 py-1" onClick={retry}>Reintentar</button>
+      <span>Sin conexión con FastAPI. En local, arranca el backend con <code className="text-orange-100">npm run dev:api</code> (puerto 8000). En Vercel, configura <code className="text-orange-100">FASTAPI_URL</code> con la URL de tu backend (Railway).</span>
+      <button className="shrink-0 rounded-md border border-orange-800 px-3 py-1" onClick={retry}>Reintentar</button>
     </div>
   );
 }
@@ -284,7 +285,8 @@ function useBundle() {
     ]);
     const next = { clientInteractions, expectedPayments, settlementPayments, newEnrollments, creditorStatus, settlementsPerDate, paymentsCleared, paymentNSF, settlements };
     setData(next);
-    setError(!Object.values(next).some((rows) => rows.length));
+    const reachable = await isFastApiReachable();
+    setError(!reachable);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
