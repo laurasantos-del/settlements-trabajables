@@ -176,6 +176,14 @@ export async function refreshMissingReports(): Promise<void> {
   }
 }
 
+export async function refreshNewEnrollments(): Promise<void> {
+  try {
+    await fetch("/api/proxy/scraper/run?reports_only=new_enrollments", { method: "POST", cache: "no-store" });
+  } catch (error) {
+    console.error("refreshNewEnrollments failed", error);
+  }
+}
+
 export async function isFastApiReachable() {
   try {
     const res = await fetch("/api/proxy/data/summary", { cache: "no-store" });

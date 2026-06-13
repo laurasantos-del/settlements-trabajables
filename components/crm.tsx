@@ -24,6 +24,7 @@ import {
   enrollmentDate,
   parseMoney,
   refreshMissingReports,
+  refreshNewEnrollments,
   fetchCommissions,
   fetchSummaryReport,
   type DataSummary,
@@ -349,13 +350,19 @@ function useBundle() {
 }
 
 function DataHealthBanner({ summary, onRefresh }: { summary: DataSummary | null; onRefresh: () => void }) {
-  if (!summary?.missing_reports?.length) return null;
-  const labels = summary.missing_reports.map((name) => name.replace(/_/g, " "));
-  const lastScrape = summary.last_scrape ? new Date(summary.last_scrape).toLocaleString("es-ES") : "desconocido";
+  const missing = summary?.missing_reports ?? [];
+  const zeroEnrollments = summary != null && summary.new_enrollments === 0;
+  if (!missing.length && !zeroEnrollments) return null;
+  const labels = missing.map((name) => name.replace(/_/g, " "));
+  const lastScrape = summary?.last_scrape ? new Date(summary.last_scrape).toLocaleString("es-ES") : "desconocido";
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-yellow-800 bg-yellow-950/40 p-4 text-sm text-yellow-100">
       <span>
-        Faltan reportes de DebtManager ({labels.join(", ")}). Última extracción: {lastScrape}. Se está intentando actualizar en segundo plano.
+        {zeroEnrollments ? (
+          <>New Enrollments está vacío en el backend ({summary?.new_enrollments ?? 0} registros). Última extracción: {lastScrape}. </>
+        ) : null}
+        {missing.length ? <>Faltan reportes de DebtManager ({labels.join(", ")}). Última extracción: {lastScrape}. </> : null}
+        Pulsa reintentar para lanzar el scraper en segundo plano.
       </span>
       <button className="shrink-0 rounded-md border border-yellow-700 px-3 py-1 hover:bg-yellow-900/40" onClick={onRefresh}>
         Reintentar ahora
@@ -452,11 +459,20 @@ export function DashboardPage() {
   const label = formatRange(range[0], range[1]);
 
   useEffect(() => {
-    if (data.summary?.missing_reports?.length) {
+    if (!data.summary) return;
+    if (data.summary.new_enrollments === 0) {
+      void refreshNewEnrollments();
+    } else if (data.summary.missing_reports?.length) {
       void refreshMissingReports();
     }
-  }, [data.summary?.missing_reports?.join(",")]);
+  }, [data.summary?.new_enrollments, data.summary?.missing_reports?.join(",")]);
   const enrollments = data.newEnrollments.filter((r) => isInRange(enrollmentDate(r), range[0], range[1]));
+  const enrollmentTotal = data.newEnrollments.length;
+  const enrollmentHint = enrollmentTotal === 0
+    ? "Sin datos en backend"
+    : enrollments.length === 0
+      ? `${enrollmentTotal} cargados · 0 en rango`
+      : label;
   const deposits = data.expectedPayments.filter((r) => isInRange(r["Scheduled Draft Date"], range[0], range[1]));
   const creditorPayments = data.settlementPayments.filter((r) => isInRange(r["Due Date"], range[0], range[1]));
   const cancelled = data.clientInteractions.filter((r) => isInRange(r["Last Note Date"], range[0], range[1]) && String(r["Last Note"] ?? "").toLowerCase().includes("cancelled"));
@@ -465,11 +481,11 @@ export function DashboardPage() {
   return (
     <div className="grid gap-6">
       <Header title="Settlements CRM" subtitle={new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })} right={<DateRangePicker start={range[0]} end={range[1]} onChange={(s, e) => setRange([s, e])} />} />
-      <DataHealthBanner summary={data.summary} onRefresh={() => { void refreshMissingReports(); reload(); }} />
+      <DataHealthBanner summary={data.summary} onRefresh={() => { void (data.summary?.new_enrollments === 0 ? refreshNewEnrollments() : refreshMissingReports()); reload(); }} />
       <Loader loading={loading} error={error} retry={reload} />
       <CardGrid cols="xl:grid-cols-6">
-        <KpiCard title="New Enrollments" value={enrollments.length} subtitle={label} tone="positive" />
-        <KpiCard title="Total Enrolled Debt" value={enrollments.reduce((s, r) => s + parseMoney(r["Total Debt"]), 0)} subtitle={label} tone="info" />
+        <KpiCard title="New Enrollments" value={enrollments.length} subtitle={enrollmentHint} tone="positive" />
+        <KpiCard title="Total Enrolled Debt" value={enrollments.reduce((s, r) => s + parseMoney(r["Total Debt"]), 0)} subtitle={enrollmentHint} tone="info" />
         <KpiCard title="Client Deposits" value={deposits.length} subtitle={`${label} · ${money(deposits.reduce((s, r) => s + parseMoney(r.Amount), 0))}`} tone="info" />
         <KpiCard title="Creditor Payments" value={creditorPayments.length} subtitle={`${label} · ${money(creditorPayments.reduce((s, r) => s + Math.abs(parseMoney(r.Amount)), 0))}`} tone="warning" />
         <KpiCard title="Cancelled" value={cancelled.length} subtitle={label} tone="danger" />
