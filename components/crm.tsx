@@ -21,6 +21,7 @@ import {
   getSuspendedPayments,
   isFastApiReachable,
   isInRange,
+  enrollmentDate,
   parseMoney,
   refreshMissingReports,
   fetchCommissions,
@@ -455,7 +456,7 @@ export function DashboardPage() {
       void refreshMissingReports();
     }
   }, [data.summary?.missing_reports?.join(",")]);
-  const enrollments = data.newEnrollments.filter((r) => isInRange(r["Status Date"], range[0], range[1]));
+  const enrollments = data.newEnrollments.filter((r) => isInRange(enrollmentDate(r), range[0], range[1]));
   const deposits = data.expectedPayments.filter((r) => isInRange(r["Scheduled Draft Date"], range[0], range[1]));
   const creditorPayments = data.settlementPayments.filter((r) => isInRange(r["Due Date"], range[0], range[1]));
   const cancelled = data.clientInteractions.filter((r) => isInRange(r["Last Note Date"], range[0], range[1]) && String(r["Last Note"] ?? "").toLowerCase().includes("cancelled"));
@@ -468,7 +469,7 @@ export function DashboardPage() {
       <Loader loading={loading} error={error} retry={reload} />
       <CardGrid cols="xl:grid-cols-6">
         <KpiCard title="New Enrollments" value={enrollments.length} subtitle={label} tone="positive" />
-        <KpiCard title="Total Enrolled Debt" value={data.newEnrollments.reduce((s, r) => s + parseMoney(r["Total Debt"]), 0)} subtitle="All New Enrollments" tone="info" />
+        <KpiCard title="Total Enrolled Debt" value={enrollments.reduce((s, r) => s + parseMoney(r["Total Debt"]), 0)} subtitle={label} tone="info" />
         <KpiCard title="Client Deposits" value={deposits.length} subtitle={`${label} · ${money(deposits.reduce((s, r) => s + parseMoney(r.Amount), 0))}`} tone="info" />
         <KpiCard title="Creditor Payments" value={creditorPayments.length} subtitle={`${label} · ${money(creditorPayments.reduce((s, r) => s + Math.abs(parseMoney(r.Amount)), 0))}`} tone="warning" />
         <KpiCard title="Cancelled" value={cancelled.length} subtitle={label} tone="danger" />
@@ -490,6 +491,14 @@ export function DashboardPage() {
         <KpiCard title="Broken" value={broken.length} tone="danger" />
         <KpiCard title="Alertas" value={alertRows(data.settlementPayments).filter((r) => r._days > 10).length} tone="warning" />
       </CardGrid>
+      <DataTable title="New Enrollments" subtitle={`${enrollments.length} inscripciones en el rango`} rows={enrollments.slice(0, 200)} columns={[
+        { key: "Client", label: "Cliente" },
+        { key: "Lead Number", label: "Lead #" },
+        { key: "Enroll Date", label: "Enroll Date", render: (r) => enrollmentDate(r) || "—" },
+        { key: "Pipeline Status", label: "Status", render: (r) => <Badge tone={statusTone(r["Pipeline Status"])}>{String(r["Pipeline Status"] ?? "-")}</Badge> },
+        { key: "Total Debt", label: "Total Debt", render: (r) => money(r["Total Debt"]) },
+        { key: "Debt Consultant", label: "Sales Rep" }
+      ]} />
       <DataTable title="Alertas críticas" rows={alertRows(data.settlementPayments).filter((r) => r._days > 30).sort((a, b) => b._days - a._days).slice(0, 10)} columns={[
         { key: "Client ID", label: "Cliente", render: clientName },
         { key: "Current Creditor", label: "Acreedor" },
