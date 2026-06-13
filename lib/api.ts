@@ -15,9 +15,33 @@ export function parseMoney(val: any): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+export function parseDate(value: any): string {
+  if (!value) return "";
+  let text = String(value).trim();
+  if (!text) return "";
+  text = text.replace(/\./g, "/").replace(/-/g, "/").replace(/\s+/g, " ").trim();
+  const parts = text.split(/\//).map((part) => part.trim()).filter(Boolean);
+  if (parts.length === 3) {
+    let [a, b, c] = parts;
+    if (a.length === 4) {
+      return `${a}-${b.padStart(2, "0")}-${c.padStart(2, "0")}`;
+    }
+    if (c.length === 4) {
+      return `${c}-${a.padStart(2, "0")}-${b.padStart(2, "0")}`;
+    }
+    if (c.length === 2) {
+      return `20${c}-${a.padStart(2, "0")}-${b.padStart(2, "0")}`;
+    }
+  }
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+}
+
 export function isInRange(dateStr: any, start: string, end: string): boolean {
-  if (!dateStr) return false;
-  const d = String(dateStr).substring(0, 10);
+  const d = parseDate(dateStr);
+  if (!d) return false;
   return d >= start && d <= end;
 }
 
@@ -92,6 +116,60 @@ export function fetchSummaryReport() {
 
 export function fetchCommissions() {
   return getRecords("/api/proxy/data/commissions");
+}
+
+export function getProjectedFees() {
+  return getRecords("/api/proxy/data/projected-fees");
+}
+
+export function getSuspendedPayments() {
+  return getRecords("/api/proxy/data/suspended-payments");
+}
+
+export function getClientSavingsEscrow() {
+  return getRecords("/api/proxy/data/client-savings-escrow");
+}
+
+export function getNegotiatorEscrow() {
+  return getRecords("/api/proxy/data/negotiator-escrow");
+}
+
+export type DataSummary = {
+  client_savings_escrow: number;
+  negotiator_escrow: number;
+  client_interactions: number;
+  expected_client_payments: number;
+  settlement_payment_report: number;
+  new_enrollments: number;
+  settlements_per_date: number;
+  payments_cleared: number;
+  commissions: number;
+  projected_fees: number;
+  payment_nsf: number;
+  summary_report: number;
+  suspended_payments: number;
+  creditor_status: number;
+  last_scrape?: string;
+  missing_reports?: string[];
+};
+
+export async function getDataSummary(): Promise<DataSummary | null> {
+  try {
+    const res = await fetch("/api/proxy/data/summary", { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("getDataSummary failed", error);
+    return null;
+  }
+}
+
+export async function refreshMissingReports(): Promise<void> {
+  try {
+    await fetch("/api/proxy/scraper/run-missing", { method: "POST", cache: "no-store" });
+  } catch (error) {
+    console.error("refreshMissingReports failed", error);
+  }
 }
 
 export async function isFastApiReachable() {

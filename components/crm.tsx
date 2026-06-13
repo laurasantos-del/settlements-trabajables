@@ -6,17 +6,26 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import {
   getClientInteractions,
+  getClientSavingsEscrow,
   getCreditorStatus,
+  getDataSummary,
   getExpectedPayments,
+  getNegotiatorEscrow,
   getNewEnrollments,
   getPaymentNSF,
   getPaymentsCleared,
+  getProjectedFees,
   getSettlementPayments,
   getSettlements,
   getSettlementsPerDate,
+  getSuspendedPayments,
   isFastApiReachable,
   isInRange,
   parseMoney,
+  refreshMissingReports,
+  fetchCommissions,
+  fetchSummaryReport,
+  type DataSummary,
   type RecordRow
 } from "@/lib/api";
 import { KpiCard } from "@/components/dashboard/kpi-card";
@@ -35,6 +44,13 @@ type Bundle = {
   paymentsCleared: RecordRow[];
   paymentNSF: RecordRow[];
   settlements: RecordRow[];
+  clientSavingsEscrow: RecordRow[];
+  negotiatorEscrow: RecordRow[];
+  projectedFees: RecordRow[];
+  suspendedPayments: RecordRow[];
+  commissions: RecordRow[];
+  summaryReport: RecordRow[];
+  summary: DataSummary | null;
 };
 
 const empty: Bundle = {
@@ -46,7 +62,14 @@ const empty: Bundle = {
   settlementsPerDate: [],
   paymentsCleared: [],
   paymentNSF: [],
-  settlements: []
+  settlements: [],
+  clientSavingsEscrow: [],
+  negotiatorEscrow: [],
+  projectedFees: [],
+  suspendedPayments: [],
+  commissions: [],
+  summaryReport: [],
+  summary: null
 };
 
 function today() {
@@ -271,7 +294,14 @@ function useBundle() {
       settlementsPerDate,
       paymentsCleared,
       paymentNSF,
-      settlements
+      settlements,
+      clientSavingsEscrow,
+      negotiatorEscrow,
+      projectedFees,
+      suspendedPayments,
+      commissions,
+      summaryReport,
+      summary
     ] = await Promise.all([
       getClientInteractions(),
       getExpectedPayments(),
@@ -281,9 +311,33 @@ function useBundle() {
       getSettlementsPerDate(),
       getPaymentsCleared(),
       getPaymentNSF(),
-      getSettlements()
+      getSettlements(),
+      getClientSavingsEscrow(),
+      getNegotiatorEscrow(),
+      getProjectedFees(),
+      getSuspendedPayments(),
+      fetchCommissions(),
+      fetchSummaryReport(),
+      getDataSummary()
     ]);
-    const next = { clientInteractions, expectedPayments, settlementPayments, newEnrollments, creditorStatus, settlementsPerDate, paymentsCleared, paymentNSF, settlements };
+    const next = {
+      clientInteractions,
+      expectedPayments,
+      settlementPayments,
+      newEnrollments,
+      creditorStatus,
+      settlementsPerDate,
+      paymentsCleared,
+      paymentNSF,
+      settlements,
+      clientSavingsEscrow,
+      negotiatorEscrow,
+      projectedFees,
+      suspendedPayments,
+      commissions,
+      summaryReport,
+      summary
+    };
     setData(next);
     const reachable = await isFastApiReachable();
     setError(!reachable);
@@ -291,6 +345,22 @@ function useBundle() {
   };
   useEffect(() => { load(); }, []);
   return { data, loading, error, reload: load };
+}
+
+function DataHealthBanner({ summary, onRefresh }: { summary: DataSummary | null; onRefresh: () => void }) {
+  if (!summary?.missing_reports?.length) return null;
+  const labels = summary.missing_reports.map((name) => name.replace(/_/g, " "));
+  const lastScrape = summary.last_scrape ? new Date(summary.last_scrape).toLocaleString("es-ES") : "desconocido";
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-yellow-800 bg-yellow-950/40 p-4 text-sm text-yellow-100">
+      <span>
+        Faltan reportes de DebtManager ({labels.join(", ")}). Última extracción: {lastScrape}. Se está intentando actualizar en segundo plano.
+      </span>
+      <button className="shrink-0 rounded-md border border-yellow-700 px-3 py-1 hover:bg-yellow-900/40" onClick={onRefresh}>
+        Reintentar ahora
+      </button>
+    </div>
+  );
 }
 
 function Header({ title, subtitle, right }: { title: string; subtitle?: string; right?: ReactNode }) {
@@ -379,6 +449,12 @@ export function DashboardPage() {
   const [start, end] = useMemo(() => todayRange(), []);
   const [range, setRange] = useState<[string, string]>([start, end]);
   const label = formatRange(range[0], range[1]);
+
+  useEffect(() => {
+    if (data.summary?.missing_reports?.length) {
+      void refreshMissingReports();
+    }
+  }, [data.summary?.missing_reports?.join(",")]);
   const enrollments = data.newEnrollments.filter((r) => isInRange(r["Status Date"], range[0], range[1]));
   const deposits = data.expectedPayments.filter((r) => isInRange(r["Scheduled Draft Date"], range[0], range[1]));
   const creditorPayments = data.settlementPayments.filter((r) => isInRange(r["Due Date"], range[0], range[1]));
@@ -388,6 +464,7 @@ export function DashboardPage() {
   return (
     <div className="grid gap-6">
       <Header title="Settlements CRM" subtitle={new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })} right={<DateRangePicker start={range[0]} end={range[1]} onChange={(s, e) => setRange([s, e])} />} />
+      <DataHealthBanner summary={data.summary} onRefresh={() => { void refreshMissingReports(); reload(); }} />
       <Loader loading={loading} error={error} retry={reload} />
       <CardGrid cols="xl:grid-cols-6">
         <KpiCard title="New Enrollments" value={enrollments.length} subtitle={label} tone="positive" />
@@ -405,7 +482,7 @@ export function DashboardPage() {
         <KpiCard title="Activos" value={data.clientInteractions.filter((r) => status(r) === "Active").length} tone="positive" />
         <KpiCard title="NSF" value={data.clientInteractions.filter((r) => ["NSF", "NSF - First Payment"].includes(status(r))).length} tone="danger" />
         <KpiCard title="On Hold" value={data.clientInteractions.filter((r) => status(r) === "On Hold").length} tone="yellow" />
-        <KpiCard title="Depósitos hoy" value={data.expectedPayments.filter((r) => r["Scheduled Draft Date"] === today()).length} tone="info" />
+        <KpiCard title="Depósitos hoy" value={data.expectedPayments.filter((r) => isInRange(r["Scheduled Draft Date"], today(), today())).length} tone="info" />
       </CardGrid>
       <CardGrid>
         <KpiCard title="Negociables" value={negotiableCount(data)} tone="warning" />
@@ -446,7 +523,7 @@ export function FinanceOverviewPage() {
   const nsf = data.clientInteractions.filter((r) => ["NSF", "NSF - First Payment"].includes(status(r)));
   const onHold = data.clientInteractions.filter((r) => status(r) === "On Hold");
   const waiting = data.clientInteractions.filter((r) => status(r) === "Waiting for first payment");
-  const depositsToday = data.expectedPayments.filter((r) => r["Scheduled Draft Date"] === today() && r["Payment Status"] === "Scheduled");
+  const depositsToday = data.expectedPayments.filter((r) => isInRange(r["Scheduled Draft Date"], today(), today()) && r["Payment Status"] === "Scheduled");
   const activeDeals = activeSettlementRows(data.settlementPayments);
   const paid60 = data.settlementPayments.filter((r) => r["Payment Status"] === "Y" && daysSince(r["Due Date"]) <= 60 && daysSince(r["Due Date"]) >= 0);
   const currentMonth = monthKey();

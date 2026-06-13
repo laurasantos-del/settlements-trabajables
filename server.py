@@ -27,6 +27,8 @@ import ticket_api  # noqa: E402
 
 _cache: Dict[str, Any] = {}
 _cache_loaded = False
+_rollbacks: Dict[str, List[Any]] = {}
+_pending_scrapes: set = set()
 
 _scraper_state: Dict[str, Any] = {
     "running": False,
@@ -62,6 +64,18 @@ store: Dict[str, List[Any]] = {
     "creditor_status": [],
     "debtmanager": [],
 }
+
+REPORT_BUCKETS = [key for key in store if key != "debtmanager"]
+REPORT_MIN_COUNTS: Dict[str, int] = {
+    "client_interactions": 500,
+    "new_enrollments": 10,
+    "expected_client_payments": 100,
+    "settlement_payment_report": 100,
+    "payments_cleared": 50,
+    "payment_nsf": 100,
+    "creditor_status": 50,
+}
+SKIP_AUTO_SCRAPE = {"commissions", "debtmanager"}
 
 engine = create_engine(f"sqlite:///{DB_FILE}", connect_args={"check_same_thread": False})
 metadata = MetaData()
@@ -133,6 +147,18 @@ def is_data_stale() -> bool:
         return elapsed > SCRAPER_STALE_HOURS * 3600
     except Exception:
         return True
+
+
+def missing_reports() -> List[str]:
+    missing: List[str] = []
+    for bucket in REPORT_BUCKETS:
+        if bucket in SKIP_AUTO_SCRAPE:
+            continue
+        count = len(cached_records(bucket))
+        minimum = REPORT_MIN_COUNTS.get(bucket, 1)
+        if count < minimum:
+            missing.append(bucket)
+    return missing
 
 
 # ── Scraper management ───────────────────────────────────────────────────────
@@ -225,10 +251,14 @@ async def lifespan(app: FastAPI):
 
     # Auto-run scraper if stale or empty
     total_records = sum(len(v) for v in _cache.values() if isinstance(v, list))
+    missing = missing_reports()
     if SCRAPER_AUTO_RUN and (total_records == 0 or is_data_stale()):
         reason = "sin datos" if total_records == 0 else f"datos obsoletos (>{SCRAPER_STALE_HOURS}h)"
         print(f"[Scraper] Auto-inicio — {reason}", flush=True)
         asyncio.create_task(run_scraper())
+    elif SCRAPER_AUTO_RUN and missing:
+        print(f"[Scraper] Auto-inicio parcial — reportes faltantes: {', '.join(missing)}", flush=True)
+        asyncio.create_task(run_scraper(",".join(missing)))
 
     # Start periodic refresh background task
     periodic_task = asyncio.create_task(periodic_scraper_loop())
@@ -503,6 +533,8 @@ async def websocket_data(websocket: WebSocket):
             if event == "start":
                 report_name = data.get("report", source) if isinstance(data, dict) else source
                 bucket = report_name if report_name in store else ("debtmanager" if source not in store else source)
+                _rollbacks[bucket] = list(store.get(bucket, []))
+                _pending_scrapes.add(bucket)
                 store[bucket] = []
                 _cache[bucket] = store[bucket]
                 # NOTE: do NOT save to disk on every start — too expensive at 69 MB
@@ -540,6 +572,14 @@ async def websocket_data(websocket: WebSocket):
                 report_name = data.get("report", source)
                 bucket = report_name if report_name in store else "debtmanager"
                 total = len(store.get(bucket, []))
+                if total == 0 and bucket in _rollbacks:
+                    store[bucket] = _rollbacks.pop(bucket)
+                    _cache[bucket] = store[bucket]
+                    total = len(store[bucket])
+                    print(f"  [{bucket}] Sin datos nuevos — restaurado respaldo ({total} registros)", flush=True)
+                else:
+                    _rollbacks.pop(bucket, None)
+                _pending_scrapes.discard(bucket)
                 _cache[bucket] = store.get(bucket, [])
 
                 # Persist JSON to disk once per report (not per batch)
@@ -560,6 +600,14 @@ async def websocket_data(websocket: WebSocket):
                 )
 
     except WebSocketDisconnect:
+        for bucket in list(_pending_scrapes):
+            backup = _rollbacks.get(bucket)
+            if backup is not None:
+                store[bucket] = backup
+                _cache[bucket] = backup
+                print(f"  [{bucket}] Scrape interrumpido — restaurado respaldo ({len(backup)} registros)", flush=True)
+        _pending_scrapes.clear()
+        _rollbacks.clear()
         if websocket in connected_clients:
             connected_clients.remove(websocket)
         print("[WS] Cliente desconectado", flush=True)
@@ -693,6 +741,7 @@ def get_creditor_status(response: Response):
 def summary(response: Response):
     response.headers["X-Cache"] = "HIT"
     meta = load_meta()
+    missing = missing_reports()
     return {
         "client_savings_escrow": len(cached_records("client_savings_escrow")),
         "negotiator_escrow": len(cached_records("negotiator_escrow")),
@@ -711,6 +760,7 @@ def summary(response: Response):
         "debtmanager": len(cached_records("debtmanager")),
         "cache_loaded": _cache_loaded,
         "last_scrape": meta.get("last_scrape_success"),
+        "missing_reports": missing,
         "last_updated": datetime.utcnow().isoformat(),
     }
 
@@ -765,6 +815,23 @@ async def trigger_scraper(reports_only: str = ""):
         }
     asyncio.create_task(run_scraper(reports_only or None))
     return {"ok": True, "message": "Scraper iniciado en background"}
+
+
+@app.post("/scraper/run-missing")
+async def trigger_missing_scraper():
+    if _scraper_state["running"]:
+        return {
+            "ok": False,
+            "message": "El scraper ya está corriendo",
+            "pid": _scraper_state["pid"],
+            "started_at": _scraper_state["started_at"],
+        }
+    missing = missing_reports()
+    if not missing:
+        return {"ok": True, "message": "Todos los reportes tienen datos", "missing_reports": []}
+    reports_only = ",".join(missing)
+    asyncio.create_task(run_scraper(reports_only))
+    return {"ok": True, "message": "Scraper iniciado para reportes faltantes", "missing_reports": missing}
 
 
 @app.get("/scraper/status")

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 const main = [
   ["Dashboard", "/"],
+  ["Pagos al Acreedor", "/finance/creditor-payments-overview"],
   ["Finance", "finance"],
   ["NSF Tickets", "/tickets/nsf"],
   ["CS/BO Alerts", "/tickets/csbo"],

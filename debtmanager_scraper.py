@@ -1145,13 +1145,17 @@ async def main():
     try:
         login(driver)
         for report in selected_reports():
-            if SEND_DURING_SCRAPE:
-                async with WebSocketReportSender(report["name"]) as sender:
-                    await scrape_report(driver, report, sender)
-                    await sender.finish()
-            else:
-                records = await scrape_report(driver, report)
-                await send_report(records, report["name"])
+            try:
+                if SEND_DURING_SCRAPE:
+                    async with WebSocketReportSender(report["name"]) as sender:
+                        await scrape_report(driver, report, sender)
+                        await sender.finish()
+                else:
+                    records = await scrape_report(driver, report)
+                    await send_report(records, report["name"])
+            except Exception as exc:
+                print(f"\n[DM] Error en {report['name']}: {exc}")
+                continue
         completed = True
     finally:
         driver.quit()
