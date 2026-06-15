@@ -356,6 +356,7 @@ function DataHealthBanner({ summary, onRefresh }: { summary: DataSummary | null;
   if (!missing.length && !zeroEnrollments) return null;
   const labels = missing.map((name) => name.replace(/_/g, " "));
   const lastScrape = summary?.last_scrape ? new Date(summary.last_scrape).toLocaleString("es-ES") : "desconocido";
+  const hasEscrowViaNegotiator = (summary?.negotiator_escrow ?? 0) > 0;
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-yellow-800 bg-yellow-950/40 p-4 text-sm text-yellow-100">
       <span>
@@ -363,6 +364,7 @@ function DataHealthBanner({ summary, onRefresh }: { summary: DataSummary | null;
           <>New Enrollments está vacío en el backend ({summary?.new_enrollments ?? 0} registros). Última extracción: {lastScrape}. </>
         ) : null}
         {missing.length ? <>Faltan reportes de DebtManager ({labels.join(", ")}). Última extracción: {lastScrape}. </> : null}
+        {hasEscrowViaNegotiator ? <>Los datos de escrow están disponibles vía Negotiator Escrow ({summary?.negotiator_escrow} registros). </> : null}
         Pulsa reintentar para lanzar el scraper en segundo plano.
       </span>
       <button className="shrink-0 rounded-md border border-yellow-700 px-3 py-1 hover:bg-yellow-900/40" onClick={onRefresh}>

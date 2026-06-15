@@ -358,6 +358,7 @@ REPORTS = [
         "title": "PROJECTED FEES REPORT",
         "url": PROJECTED_FEES_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Client ID"),
@@ -410,6 +411,7 @@ REPORTS = [
         "title": "SUSPENDED PAYMENT PLANS REPORT",
         "url": SUSPENDED_PAYMENTS_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Client ID"),
@@ -727,6 +729,19 @@ def new_enrollments_date_range():
     return os.getenv("NEW_ENROLLMENTS_START", "2026-01-01"), os.getenv("NEW_ENROLLMENTS_END", today)
 
 
+def custom_report_date_range():
+    today = date.today().isoformat()
+    return os.getenv("CUSTOM_REPORT_START", "2026-01-01"), os.getenv("CUSTOM_REPORT_END", today)
+
+
+DATE_FILTER_REPORTS = {
+    "new_enrollments": new_enrollments_date_range,
+    "projected_fees": custom_report_date_range,
+    "suspended_payments": custom_report_date_range,
+    "settlements_per_date": settlements_per_date_range,
+}
+
+
 def summary_key(section, label):
     key = re.sub(r"\s*\[\s*detail\s*\]\s*", "", label, flags=re.I).strip()
     key = re.sub(r"\s+", " ", key)
@@ -777,13 +792,10 @@ async def scrape_kendo_report(driver, report, sender=None):
     driver.get(report["url"])
     time.sleep(1.0)
 
-    if report["name"] == "new_enrollments":
-        date_start, date_end = new_enrollments_date_range()
+    range_fn = DATE_FILTER_REPORTS.get(report["name"])
+    if range_fn:
+        date_start, date_end = range_fn()
         report["_date_range"] = (date_start, date_end)
-        apply_date_filter(driver, date_start, date_end, report["name"])
-
-    if report["name"] == "settlements_per_date":
-        date_start, date_end = settlements_per_date_range()
         apply_date_filter(driver, date_start, date_end, report["name"])
 
     if report["name"] == "commissions":
@@ -890,6 +902,30 @@ def apply_date_filter(driver, date_start, date_end, report_name):
         return False
 
 
+def click_run_report_if_present(driver):
+    for selector in (
+        (By.NAME, "Enter"),
+        (By.CSS_SELECTOR, "input[type='submit']"),
+        (By.XPATH, "//input[@value='Run Report']"),
+    ):
+        try:
+            driver.find_element(*selector).click()
+            time.sleep(2.0)
+            return True
+        except Exception:
+            continue
+    return False
+
+
+def apply_dom_date_filters(driver, report):
+    range_fn = DATE_FILTER_REPORTS.get(report.get("name", ""))
+    if not range_fn:
+        return
+    date_start, date_end = range_fn()
+    report["_date_range"] = (date_start, date_end)
+    apply_date_filter(driver, date_start, date_end, report["name"])
+
+
 def normalize_new_enrollment_batch(batch, report):
     if report.get("name") != "new_enrollments":
         return batch
@@ -909,14 +945,15 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
     print(f"  URL: {report['url']}")
     driver.get(report["url"])
     time.sleep(1.0)
-
-    if report["name"] == "new_enrollments":
-        date_start, date_end = new_enrollments_date_range()
-        report["_date_range"] = (date_start, date_end)
-        apply_date_filter(driver, date_start, date_end, report["name"])
+    apply_dom_date_filters(driver, report)
 
     wait = WebDriverWait(driver, 30)
-    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
+    try:
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
+    except TimeoutException:
+        print(f"  Sin filas visibles en grid para {report['name']}")
+        return [] if not sender else 0
+
     page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", os.getenv("KENDO_PAGE_SIZE", "200")))
     if page_size != 40:
         driver.execute_script('jQuery("#grid").data("kendoGrid").dataSource.pageSize(arguments[0]);', page_size)
@@ -1058,6 +1095,8 @@ async def scrape_report(driver, report, sender=None):
     print(f"\n[DM] -- {report['title']} --")
     driver.get(report["url"])
     wait = WebDriverWait(driver, 20)
+    time.sleep(1.0)
+    click_run_report_if_present(driver)
     all_records = []
     seen_pages = set()
     page = 1

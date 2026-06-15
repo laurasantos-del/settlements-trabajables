@@ -74,8 +74,10 @@ REPORT_MIN_COUNTS: Dict[str, int] = {
     "payments_cleared": 50,
     "payment_nsf": 100,
     "creditor_status": 50,
+    "negotiator_escrow": 50,
 }
 SKIP_AUTO_SCRAPE = {"commissions", "debtmanager"}
+OPTIONAL_EMPTY_REPORTS = {"projected_fees", "suspended_payments"}
 
 engine = create_engine(f"sqlite:///{DB_FILE}", connect_args={"check_same_thread": False})
 metadata = MetaData()
@@ -151,10 +153,17 @@ def is_data_stale() -> bool:
 
 def missing_reports() -> List[str]:
     missing: List[str] = []
+    negotiator_count = len(cached_records("negotiator_escrow"))
+    meta = load_meta()
+    scraped_recently = bool(meta.get("last_scrape_success"))
     for bucket in REPORT_BUCKETS:
         if bucket in SKIP_AUTO_SCRAPE:
             continue
+        if bucket == "client_savings_escrow" and negotiator_count >= REPORT_MIN_COUNTS.get("negotiator_escrow", 1):
+            continue
         count = len(cached_records(bucket))
+        if bucket in OPTIONAL_EMPTY_REPORTS and count == 0 and scraped_recently:
+            continue
         minimum = REPORT_MIN_COUNTS.get(bucket, 1)
         if count < minimum:
             missing.append(bucket)
