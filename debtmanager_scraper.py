@@ -210,6 +210,7 @@ REPORTS = [
         "title": "NEW ENROLLMENTS",
         "url": NEW_ENROLLMENTS_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Lead Number"),
@@ -481,6 +482,7 @@ def make_driver():
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--disable-gpu")
     opts.add_argument("--window-size=1920,1080")
+    opts.add_argument("--disable-software-rasterizer")
     opts.add_argument("--remote-debugging-port=9222")
 
     # In Docker/cloud: use system Chrome set via env vars
@@ -778,24 +780,11 @@ async def scrape_kendo_report(driver, report, sender=None):
     if report["name"] == "new_enrollments":
         date_start, date_end = new_enrollments_date_range()
         report["_date_range"] = (date_start, date_end)
-        print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
+        apply_date_filter(driver, date_start, date_end, report["name"])
 
     if report["name"] == "settlements_per_date":
         date_start, date_end = settlements_per_date_range()
-        try:
-            driver.execute_script(
-                """
-                document.getElementsByName('date_start')[0].value = arguments[0];
-                document.getElementsByName('date_end')[0].value = arguments[1];
-                """,
-                date_start,
-                date_end,
-            )
-            driver.find_element(By.NAME, "Enter").click()
-            time.sleep(1.5)
-            print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
-        except Exception as exc:
-            print(f"  No pude aplicar filtros en settlements_per_date: {exc}")
+        apply_date_filter(driver, date_start, date_end, report["name"])
 
     if report["name"] == "commissions":
         body = driver.find_element(By.TAG_NAME, "body").text
@@ -880,10 +869,52 @@ def extract_kendo_dom_rows(driver, report_name, page):
     return records
 
 
+def apply_date_filter(driver, date_start, date_end, report_name):
+    try:
+        driver.execute_script(
+            """
+            const start = document.getElementsByName('date_start')[0];
+            const end = document.getElementsByName('date_end')[0];
+            if (start) start.value = arguments[0];
+            if (end) end.value = arguments[1];
+            """,
+            date_start,
+            date_end,
+        )
+        driver.find_element(By.NAME, "Enter").click()
+        time.sleep(2.0)
+        print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
+        return True
+    except Exception as exc:
+        print(f"  No pude aplicar filtros en {report_name}: {exc}")
+        return False
+
+
+def normalize_new_enrollment_batch(batch, report):
+    if report.get("name") != "new_enrollments":
+        return batch
+    date_start, date_end = report.get("_date_range", new_enrollments_date_range())
+    return [
+        normalize_new_enrollment_record({
+            **record,
+            **({"Report Date Start": date_start} if date_start else {}),
+            **({"Report Date End": date_end} if date_end else {}),
+        })
+        for record in batch
+    ]
+
+
 async def scrape_kendo_dom_report(driver, report, sender=None):
     print(f"\n[DM] -- {report['title']} --")
     print(f"  URL: {report['url']}")
     driver.get(report["url"])
+    time.sleep(1.0)
+
+    if report["name"] == "new_enrollments":
+        date_start, date_end = new_enrollments_date_range()
+        report["_date_range"] = (date_start, date_end)
+        apply_date_filter(driver, date_start, date_end, report["name"])
+
     wait = WebDriverWait(driver, 30)
     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
     page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", os.getenv("KENDO_PAGE_SIZE", "200")))
@@ -900,7 +931,7 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
     while True:
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
         time.sleep(0.4)
-        batch = extract_kendo_dom_rows(driver, report["name"], page)
+        batch = normalize_new_enrollment_batch(extract_kendo_dom_rows(driver, report["name"], page), report)
         page_signature = tuple(
             tuple((key, value) for key, value in record.items() if key != "_page")
             for record in batch
@@ -908,7 +939,7 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
         if page_signature in seen_pages:
             print(f"  Pag {page:>4}: pagina repetida detectada; reintento avance")
             time.sleep(1.0)
-            batch = extract_kendo_dom_rows(driver, report["name"], page)
+            batch = normalize_new_enrollment_batch(extract_kendo_dom_rows(driver, report["name"], page), report)
             page_signature = tuple(
                 tuple((key, value) for key, value in record.items() if key != "_page")
                 for record in batch

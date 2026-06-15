@@ -49,6 +49,11 @@ export function enrollmentDate(row: RecordRow): string {
   return parseDate(row["Enroll Date"] || row["Enrollment Date"] || row["Status Date"]);
 }
 
+export function enrollmentInRange(row: RecordRow, start: string, end: string): boolean {
+  const dates = [row["Status Date"], row["Enroll Date"], row["Enrollment Date"]];
+  return dates.some((value) => isInRange(value, start, end));
+}
+
 async function getRecords(path: string): Promise<RecordRow[]> {
   try {
     const res = await fetch(path, { cache: "no-store" });

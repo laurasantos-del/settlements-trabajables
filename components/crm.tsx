@@ -22,6 +22,7 @@ import {
   isFastApiReachable,
   isInRange,
   enrollmentDate,
+  enrollmentInRange,
   parseMoney,
   refreshMissingReports,
   refreshNewEnrollments,
@@ -466,7 +467,7 @@ export function DashboardPage() {
       void refreshMissingReports();
     }
   }, [data.summary?.new_enrollments, data.summary?.missing_reports?.join(",")]);
-  const enrollments = data.newEnrollments.filter((r) => isInRange(enrollmentDate(r), range[0], range[1]));
+  const enrollments = data.newEnrollments.filter((r) => enrollmentInRange(r, range[0], range[1]));
   const enrollmentTotal = data.newEnrollments.length;
   const enrollmentHint = enrollmentTotal === 0
     ? "Sin datos en backend"
@@ -511,6 +512,7 @@ export function DashboardPage() {
         { key: "Client", label: "Cliente" },
         { key: "Lead Number", label: "Lead #" },
         { key: "Enroll Date", label: "Enroll Date", render: (r) => enrollmentDate(r) || "—" },
+        { key: "Status Date", label: "Status Date" },
         { key: "Pipeline Status", label: "Status", render: (r) => <Badge tone={statusTone(r["Pipeline Status"])}>{String(r["Pipeline Status"] ?? "-")}</Badge> },
         { key: "Total Debt", label: "Total Debt", render: (r) => money(r["Total Debt"]) },
         { key: "Debt Consultant", label: "Sales Rep" }
