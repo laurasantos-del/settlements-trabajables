@@ -1,5 +1,5 @@
-import { AtRiskPage } from "@/components/finance/creditor-payments-crm";
+import { CreditorPaymentsOverviewPage } from "@/components/crm";
 
 export default function Page() {
-  return <AtRiskPage />;
+  return <CreditorPaymentsOverviewPage />;
 }

@@ -1,149 +1,84 @@
 "use client";
 
-import { dateKey } from "@/lib/dates";
-
-type DateRangePickerProps = {
-  startDate: string;
-  endDate: string;
-  onChange: (start: string, end: string) => void;
-  defaultStartDate?: string;
-  defaultEndDate?: string;
-};
-
-type Preset = {
-  label: string;
-  range: () => [string, string];
-};
-
-function addDays(date: Date, days: number): Date {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return next;
-}
-
-function startOfWeek(date: Date): Date {
-  const next = new Date(date);
-  const day = next.getDay();
-  const offset = day === 0 ? -6 : 1 - day;
-  return addDays(next, offset);
-}
-
-function startOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function endOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-}
-
-function startOfYear(date: Date): Date {
-  return new Date(date.getFullYear(), 0, 1);
-}
-
-function formatFullDate(value: string): string {
-  const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) return value;
-  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(year, month - 1, day));
-}
-
-function formatShortDate(value: string): string {
-  const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) return value;
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(year, month - 1, day));
-}
-
-export function formatDateRange(start: string, end: string): string {
-  return `${formatFullDate(start)} — ${formatFullDate(end)}`;
-}
-
-export function formatDateRangeBadge(start: string, end: string): string {
-  return `${formatShortDate(start)} — ${formatShortDate(end)}`;
+function key(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 export function todayRange(): [string, string] {
-  const today = dateKey();
+  const today = key(new Date());
   return [today, today];
 }
 
 export function yesterdayRange(): [string, string] {
-  const yesterday = dateKey(addDays(new Date(), -1));
-  return [yesterday, yesterday];
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const y = key(d);
+  return [y, y];
 }
 
 export function thisWeekRange(): [string, string] {
-  return [dateKey(startOfWeek(new Date())), dateKey(new Date())];
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay());
+  return [key(start), key(now)];
 }
 
 export function thisMonthRange(): [string, string] {
-  return [dateKey(startOfMonth(new Date())), dateKey(new Date())];
+  const now = new Date();
+  return [key(new Date(now.getFullYear(), now.getMonth(), 1)), key(now)];
 }
 
 export function lastMonthRange(): [string, string] {
-  const today = new Date();
-  const month = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-  return [dateKey(startOfMonth(month)), dateKey(endOfMonth(month))];
-}
-
-export function lastMonthsRange(months: number): [string, string] {
-  const today = new Date();
-  return [dateKey(new Date(today.getFullYear(), today.getMonth() - months + 1, 1)), dateKey(today)];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const end = new Date(now.getFullYear(), now.getMonth(), 0);
+  return [key(start), key(end)];
 }
 
 export function thisYearRange(): [string, string] {
-  return [dateKey(startOfYear(new Date())), dateKey(new Date())];
+  const now = new Date();
+  return [key(new Date(now.getFullYear(), 0, 1)), key(now)];
 }
 
-const presets: Preset[] = [
-  { label: "Hoy", range: todayRange },
-  { label: "Ayer", range: yesterdayRange },
-  { label: "Esta semana", range: thisWeekRange },
-  { label: "Este mes", range: thisMonthRange },
-  { label: "Mes pasado", range: lastMonthRange },
-  { label: "Últimos 3 meses", range: () => lastMonthsRange(3) },
-  { label: "Últimos 6 meses", range: () => lastMonthsRange(6) },
-  { label: "Este año", range: thisYearRange }
-];
+export function lastMonthsRange(months: number): [string, string] {
+  const now = new Date();
+  return [key(new Date(now.getFullYear(), now.getMonth() - months + 1, 1)), key(now)];
+}
 
-export function DateRangePicker({ startDate, endDate, onChange, defaultStartDate, defaultEndDate }: DateRangePickerProps) {
-  const isCustom = !presets.some((preset) => {
-    const [start, end] = preset.range();
-    return start === startDate && end === endDate;
-  });
-  const isDefault = defaultStartDate === startDate && defaultEndDate === endDate;
+export function formatRange(start: string, end: string) {
+  const fmt = new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" });
+  return `${fmt.format(new Date(`${start}T00:00:00`))} — ${fmt.format(new Date(`${end}T00:00:00`))}`;
+}
 
+export const formatDateRange = formatRange;
+export const formatDateRangeBadge = formatRange;
+
+const presets = [
+  ["Hoy", todayRange],
+  ["Ayer", yesterdayRange],
+  ["Esta semana", thisWeekRange],
+  ["Este mes", thisMonthRange],
+  ["Mes pasado", lastMonthRange]
+] as const;
+
+export function DateRangePicker(props: { start?: string; end?: string; startDate?: string; endDate?: string; defaultStartDate?: string; defaultEndDate?: string; onChange: (start: string, end: string) => void }) {
+  const start = props.start ?? props.startDate ?? props.defaultStartDate ?? todayRange()[0];
+  const end = props.end ?? props.endDate ?? props.defaultEndDate ?? todayRange()[1];
+  const onChange = props.onChange;
   return (
-    <section className="card-pad grid gap-3 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="label">Date range</p>
-          <p className="mt-1 text-sm font-semibold text-white">{formatDateRange(startDate, endDate)}</p>
-        </div>
-        {!isDefault && defaultStartDate && defaultEndDate ? (
-          <button className="rounded-lg border border-orange-500/40 bg-orange-950/40 px-3 py-1 text-xs font-semibold text-orange-200 hover:bg-orange-900/50" onClick={() => onChange(defaultStartDate, defaultEndDate)}>
-            X {formatDateRangeBadge(startDate, endDate)}
+    <section className="rounded-[10px] border border-[#1f1f1f] bg-[#141414] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#666]">Date range</p>
+      <p className="mt-1 text-sm font-semibold text-white">{formatRange(start, end)}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {presets.map(([label, range]) => (
+          <button key={label} className="rounded-md border border-[#1f1f1f] px-3 py-1 text-xs text-neutral-300 hover:border-[#f97316] hover:text-white" onClick={() => onChange(...range())}>
+            {label}
           </button>
-        ) : null}
+        ))}
       </div>
-      <div className="flex flex-wrap gap-2">
-        {presets.map((preset) => {
-          const [start, end] = preset.range();
-          const active = start === startDate && end === endDate;
-          return (
-            <button
-              key={preset.label}
-              className={`rounded-lg border px-3 py-2 text-xs font-semibold ${active ? "border-accent bg-orange-950/60 text-orange-100" : "border-border text-neutral-300 hover:bg-neutral-900"}`}
-              onClick={() => onChange(start, end)}
-            >
-              {preset.label}
-            </button>
-          );
-        })}
-        <span className={`rounded-lg border px-3 py-2 text-xs font-semibold ${isCustom ? "border-accent bg-orange-950/60 text-orange-100" : "border-border text-neutral-400"}`}>Rango personalizado</span>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <input className="input-dark" type="date" value={startDate} onChange={(event) => onChange(event.target.value, endDate)} />
-        <span className="text-xs text-muted">to</span>
-        <input className="input-dark" type="date" value={endDate} onChange={(event) => onChange(startDate, event.target.value)} />
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <input className="rounded-md border border-[#1f1f1f] bg-[#0f0f0f] px-3 py-2 text-sm" type="date" value={start} onChange={(e) => onChange(e.target.value, end)} />
+        <input className="rounded-md border border-[#1f1f1f] bg-[#0f0f0f] px-3 py-2 text-sm" type="date" value={end} onChange={(e) => onChange(start, e.target.value)} />
       </div>
     </section>
   );

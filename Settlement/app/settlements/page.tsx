@@ -1,5 +1,5 @@
-import { SettlementOverview } from "@/components/settlement/settlement-dashboards";
+import { SettlementOverviewPage } from "@/components/crm";
 
 export default function Page() {
-  return <SettlementOverview />;
+  return <SettlementOverviewPage />;
 }

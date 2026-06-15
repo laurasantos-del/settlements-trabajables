@@ -22,3 +22,4 @@ CRM analítico para una empresa de debt settlement.
 
 El frontend puede funcionar con datos demo y cargas CSV/Excel locales.
 El backend FastAPI existente corre en `localhost:8000` para los reportes operativos actuales.
+# Porsh

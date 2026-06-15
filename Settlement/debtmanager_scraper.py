@@ -1,7 +1,9 @@
 import asyncio
 import json
 import os
+import platform
 import re
+import subprocess
 import time
 from datetime import date, datetime
 
@@ -208,6 +210,7 @@ REPORTS = [
         "title": "NEW ENROLLMENTS",
         "url": NEW_ENROLLMENTS_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Lead Number"),
@@ -355,6 +358,7 @@ REPORTS = [
         "title": "PROJECTED FEES REPORT",
         "url": PROJECTED_FEES_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Client ID"),
@@ -407,6 +411,7 @@ REPORTS = [
         "title": "SUSPENDED PAYMENT PLANS REPORT",
         "url": SUSPENDED_PAYMENTS_URL,
         "kendo": True,
+        "kendo_dom": True,
         "kendo_table": "client",
         "fields": [
             ("clientid", "Client ID"),
@@ -448,6 +453,29 @@ CHROME_BIN = os.getenv("CHROME_BIN", "")
 CHROMEDRIVER_BIN = os.getenv("CHROMEDRIVER_BIN", "")
 
 
+def _codesign_if_needed(path: str) -> None:
+    """On macOS, newly-downloaded ChromeDrivers are killed by Gatekeeper unless ad-hoc signed."""
+    if platform.system() != "Darwin":
+        return
+    try:
+        result = subprocess.run(
+            [path, "--version"],
+            capture_output=True,
+            timeout=5,
+        )
+        if result.returncode == 0:
+            return
+        subprocess.run(
+            ["codesign", "--sign", "-", "--force",
+             "--preserve-metadata=entitlements,requirements,flags,runtime", path],
+            check=True,
+            capture_output=True,
+        )
+        print(f"[ChromeDriver] Ad-hoc signed: {path}")
+    except Exception as exc:
+        print(f"[ChromeDriver] codesign check/fix failed: {exc}")
+
+
 def make_driver():
     opts = webdriver.ChromeOptions()
     if HEADLESS:
@@ -456,6 +484,7 @@ def make_driver():
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--disable-gpu")
     opts.add_argument("--window-size=1920,1080")
+    opts.add_argument("--disable-software-rasterizer")
     opts.add_argument("--remote-debugging-port=9222")
 
     # In Docker/cloud: use system Chrome set via env vars
@@ -463,10 +492,12 @@ def make_driver():
     if CHROME_BIN:
         opts.binary_location = CHROME_BIN
     if CHROMEDRIVER_BIN:
-        service = Service(CHROMEDRIVER_BIN)
+        driver_path = CHROMEDRIVER_BIN
     else:
-        service = Service(ChromeDriverManager().install())
+        driver_path = ChromeDriverManager().install()
 
+    _codesign_if_needed(driver_path)
+    service = Service(driver_path)
     return webdriver.Chrome(service=service, options=opts)
 
 
@@ -555,9 +586,14 @@ def extract_rows(driver, report_name, fallback_cols, page):
 
 
 def selected_reports():
+    reports = [report.copy() for report in REPORTS]
+    if os.getenv("PAYMENTS_CLEARED_USE_API", "false").lower() == "true":
+        for report in reports:
+            if report.get("name") == "payments_cleared":
+                report["kendo_dom"] = False
     if not REPORTS_ONLY:
-        return REPORTS
-    return [report for report in REPORTS if report.get("name") in REPORTS_ONLY]
+        return reports
+    return [report for report in reports if report.get("name") in REPORTS_ONLY]
 
 
 def max_pages_for(report_name):
@@ -690,7 +726,20 @@ def settlements_per_date_range():
 
 def new_enrollments_date_range():
     today = date.today().isoformat()
-    return os.getenv("NEW_ENROLLMENTS_START", today), os.getenv("NEW_ENROLLMENTS_END", today)
+    return os.getenv("NEW_ENROLLMENTS_START", "2026-01-01"), os.getenv("NEW_ENROLLMENTS_END", today)
+
+
+def custom_report_date_range():
+    today = date.today().isoformat()
+    return os.getenv("CUSTOM_REPORT_START", "2026-01-01"), os.getenv("CUSTOM_REPORT_END", today)
+
+
+DATE_FILTER_REPORTS = {
+    "new_enrollments": new_enrollments_date_range,
+    "projected_fees": custom_report_date_range,
+    "suspended_payments": custom_report_date_range,
+    "settlements_per_date": settlements_per_date_range,
+}
 
 
 def summary_key(section, label):
@@ -743,27 +792,11 @@ async def scrape_kendo_report(driver, report, sender=None):
     driver.get(report["url"])
     time.sleep(1.0)
 
-    if report["name"] == "new_enrollments":
-        date_start, date_end = new_enrollments_date_range()
+    range_fn = DATE_FILTER_REPORTS.get(report["name"])
+    if range_fn:
+        date_start, date_end = range_fn()
         report["_date_range"] = (date_start, date_end)
-        print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
-
-    if report["name"] == "settlements_per_date":
-        date_start, date_end = settlements_per_date_range()
-        try:
-            driver.execute_script(
-                """
-                document.getElementsByName('date_start')[0].value = arguments[0];
-                document.getElementsByName('date_end')[0].value = arguments[1];
-                """,
-                date_start,
-                date_end,
-            )
-            driver.find_element(By.NAME, "Enter").click()
-            time.sleep(1.5)
-            print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
-        except Exception as exc:
-            print(f"  No pude aplicar filtros en settlements_per_date: {exc}")
+        apply_date_filter(driver, date_start, date_end, report["name"])
 
     if report["name"] == "commissions":
         body = driver.find_element(By.TAG_NAME, "body").text
@@ -848,12 +881,79 @@ def extract_kendo_dom_rows(driver, report_name, page):
     return records
 
 
+def apply_date_filter(driver, date_start, date_end, report_name):
+    try:
+        driver.execute_script(
+            """
+            const start = document.getElementsByName('date_start')[0];
+            const end = document.getElementsByName('date_end')[0];
+            if (start) start.value = arguments[0];
+            if (end) end.value = arguments[1];
+            """,
+            date_start,
+            date_end,
+        )
+        driver.find_element(By.NAME, "Enter").click()
+        time.sleep(2.0)
+        print(f"  Filtro aplicado: date_start={date_start} date_end={date_end}")
+        return True
+    except Exception as exc:
+        print(f"  No pude aplicar filtros en {report_name}: {exc}")
+        return False
+
+
+def click_run_report_if_present(driver):
+    for selector in (
+        (By.NAME, "Enter"),
+        (By.CSS_SELECTOR, "input[type='submit']"),
+        (By.XPATH, "//input[@value='Run Report']"),
+    ):
+        try:
+            driver.find_element(*selector).click()
+            time.sleep(2.0)
+            return True
+        except Exception:
+            continue
+    return False
+
+
+def apply_dom_date_filters(driver, report):
+    range_fn = DATE_FILTER_REPORTS.get(report.get("name", ""))
+    if not range_fn:
+        return
+    date_start, date_end = range_fn()
+    report["_date_range"] = (date_start, date_end)
+    apply_date_filter(driver, date_start, date_end, report["name"])
+
+
+def normalize_new_enrollment_batch(batch, report):
+    if report.get("name") != "new_enrollments":
+        return batch
+    date_start, date_end = report.get("_date_range", new_enrollments_date_range())
+    return [
+        normalize_new_enrollment_record({
+            **record,
+            **({"Report Date Start": date_start} if date_start else {}),
+            **({"Report Date End": date_end} if date_end else {}),
+        })
+        for record in batch
+    ]
+
+
 async def scrape_kendo_dom_report(driver, report, sender=None):
     print(f"\n[DM] -- {report['title']} --")
     print(f"  URL: {report['url']}")
     driver.get(report["url"])
+    time.sleep(1.0)
+    apply_dom_date_filters(driver, report)
+
     wait = WebDriverWait(driver, 30)
-    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
+    try:
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
+    except TimeoutException:
+        print(f"  Sin filas visibles en grid para {report['name']}")
+        return [] if not sender else 0
+
     page_size = int(os.getenv(f"{report['name'].upper()}_PAGE_SIZE", os.getenv("KENDO_PAGE_SIZE", "200")))
     if page_size != 40:
         driver.execute_script('jQuery("#grid").data("kendoGrid").dataSource.pageSize(arguments[0]);', page_size)
@@ -868,7 +968,7 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
     while True:
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#grid .k-grid-content tbody tr")))
         time.sleep(0.4)
-        batch = extract_kendo_dom_rows(driver, report["name"], page)
+        batch = normalize_new_enrollment_batch(extract_kendo_dom_rows(driver, report["name"], page), report)
         page_signature = tuple(
             tuple((key, value) for key, value in record.items() if key != "_page")
             for record in batch
@@ -876,7 +976,7 @@ async def scrape_kendo_dom_report(driver, report, sender=None):
         if page_signature in seen_pages:
             print(f"  Pag {page:>4}: pagina repetida detectada; reintento avance")
             time.sleep(1.0)
-            batch = extract_kendo_dom_rows(driver, report["name"], page)
+            batch = normalize_new_enrollment_batch(extract_kendo_dom_rows(driver, report["name"], page), report)
             page_signature = tuple(
                 tuple((key, value) for key, value in record.items() if key != "_page")
                 for record in batch
@@ -995,6 +1095,8 @@ async def scrape_report(driver, report, sender=None):
     print(f"\n[DM] -- {report['title']} --")
     driver.get(report["url"])
     wait = WebDriverWait(driver, 20)
+    time.sleep(1.0)
+    click_run_report_if_present(driver)
     all_records = []
     seen_pages = set()
     page = 1
@@ -1113,13 +1215,17 @@ async def main():
     try:
         login(driver)
         for report in selected_reports():
-            if SEND_DURING_SCRAPE:
-                async with WebSocketReportSender(report["name"]) as sender:
-                    await scrape_report(driver, report, sender)
-                    await sender.finish()
-            else:
-                records = await scrape_report(driver, report)
-                await send_report(records, report["name"])
+            try:
+                if SEND_DURING_SCRAPE:
+                    async with WebSocketReportSender(report["name"]) as sender:
+                        await scrape_report(driver, report, sender)
+                        await sender.finish()
+                else:
+                    records = await scrape_report(driver, report)
+                    await send_report(records, report["name"])
+            except Exception as exc:
+                print(f"\n[DM] Error en {report['name']}: {exc}")
+                continue
         completed = True
     finally:
         driver.quit()

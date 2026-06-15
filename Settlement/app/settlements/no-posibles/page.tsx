@@ -1,5 +1,5 @@
-import { NotPossibleSettlements } from "@/components/settlement/settlement-dashboards";
+import { NotPossiblePage } from "@/components/crm";
 
 export default function Page() {
-  return <NotPossibleSettlements />;
+  return <NotPossiblePage />;
 }

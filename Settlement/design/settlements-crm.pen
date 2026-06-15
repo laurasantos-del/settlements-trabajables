@@ -1,0 +1,5757 @@
+{
+  "version": "2.13",
+  "variables": {
+    "bg-app": {
+      "type": "color",
+      "value": "#0f0f0f"
+    },
+    "bg-panel": {
+      "type": "color",
+      "value": "#141414"
+    },
+    "bg-elevated": {
+      "type": "color",
+      "value": "#1a1a1a"
+    },
+    "bg-card": {
+      "type": "color",
+      "value": "#1f1f1f"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#ffffff"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#a0a0a0"
+    },
+    "text-muted": {
+      "type": "color",
+      "value": "#666666"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#f97316"
+    },
+    "positive": {
+      "type": "color",
+      "value": "#22c55e"
+    },
+    "warning": {
+      "type": "color",
+      "value": "#eab308"
+    },
+    "danger": {
+      "type": "color",
+      "value": "#ef4444"
+    },
+    "info": {
+      "type": "color",
+      "value": "#3b82f6"
+    },
+    "radius": {
+      "type": "number",
+      "value": 10
+    },
+    "sidebar-width": {
+      "type": "number",
+      "value": 240
+    },
+    "spacing": {
+      "type": "number",
+      "value": 16
+    }
+  },
+  "children": [
+    {
+      "id": "readme",
+      "type": "note",
+      "name": "HOW TO SEE ALL SCREENS",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 200,
+      "fill": "$warning",
+      "content": "This file maps ALL 20 CRM screens from components/crm.tsx.\n\nIn Pencil: View → Zoom to Fit (or scroll right/down).\nScreens start at Y=1200 in a 4-column grid.\n\nTo get pixel-perfect UI: Cmd+K → paste prompt from design/PENCIL-BRIEF.md section 3.\nSource code: components/crm.tsx (1368 lines, 17 exported pages)."
+    },
+    {
+      "id": "sitemap",
+      "type": "frame",
+      "name": "CRM Sitemap — 20 Screens",
+      "x": 640,
+      "y": 0,
+      "width": 900,
+      "height": 1100,
+      "fill": "$bg-panel",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "map-dashboard",
+          "type": "text",
+          "content": "1. Dashboard (/) — New Enrollments, Total Enrolled Debt, Client Deposits, Creditor Payments",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-finance-overview",
+          "type": "text",
+          "content": "2. Finance Overview (/finance) — Activos, NSF, On Hold, Waiting",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-client-deposits",
+          "type": "text",
+          "content": "3. Client Deposits (/finance/client-deposits) — Active, NSF, On Hold, Waiting",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-creditor-payments",
+          "type": "text",
+          "content": "4. Pagos al Acreedor (/finance/creditor-payments-overview) — Negocios Activos, Dinero Saliendo, Pagos en Rango, En Legal",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-revenue",
+          "type": "text",
+          "content": "5. Revenue (/finance/revenue) — Fees Agendados, Fees Cobrados, Pagos Cleared este mes, Commissions warning",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-alerts",
+          "type": "text",
+          "content": "6. Alertas Reconciliación (/finance/alerts) — En seguimiento, Medio, Riesgo Alto, Posible Broken",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-settlement-overview",
+          "type": "text",
+          "content": "7. Settlement Overview (/settlement) — Negociables, Settlements Activos, Alertas, Settlements Mes",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-creditor-status",
+          "type": "text",
+          "content": "8. Creditor Status (/settlement/creditor-status) — Status count cards (up to 12), Creditor Status",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-monthly",
+          "type": "text",
+          "content": "9. Settlements del Mes (/settlement/monthly) — Count, Deuda negociada, Monto, Ahorro",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-futures",
+          "type": "text",
+          "content": "10. Futuros (/settlement/futures) — Sin acuerdo, Con fondos, Negociables 55%, Cuentas futuras",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-negociables",
+          "type": "text",
+          "content": "11. Negociables (/settlement/negociables) — Clientes negociables, Con deudas listas, Escrow total, Deudas pendientes",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-not-possible",
+          "type": "text",
+          "content": "12. No Posibles (/settlement/not-possible) — S40, S50, REMOVEPEND, ADDPEND",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-broken",
+          "type": "text",
+          "content": "13. Rotos (/settlement/broken) — Settlements Rotos",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-plan",
+          "type": "text",
+          "content": "14. Settlement Plan (/settlement/plan) — Plan (monthly est, 55%, first settlement month)",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-sales",
+          "type": "text",
+          "content": "15. Sales (/sales) — Total Signed, First Payment, Missing, Completion Rate",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-retention",
+          "type": "text",
+          "content": "16. Retención (/retention) — Total Enrolled, Active Paying, Never Paid Left, Cancelled After Paying",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-settings",
+          "type": "text",
+          "content": "17. Settings (/settings) — ",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-nsf-tickets",
+          "type": "text",
+          "content": "18. NSF Tickets (/tickets/nsf) — Proposed tickets, Editable subject/content",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-csbo-tickets",
+          "type": "text",
+          "content": "19. CS/BO Alerts (/tickets/csbo) — ",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        },
+        {
+          "id": "map-tomorrow",
+          "type": "text",
+          "content": "20. Pagos Mañana (/payments/tomorrow) — Payment tables with totals",
+          "fill": "$text-secondary",
+          "fontSize": 12
+        }
+      ]
+    },
+    {
+      "id": "import-prompt",
+      "type": "prompt",
+      "name": "FULL IMPORT PROMPT — Cmd+K",
+      "x": 1600,
+      "y": 0,
+      "width": 560,
+      "height": 500,
+      "fill": "$bg-elevated",
+      "content": "Import the COMPLETE Settlements CRM from this workspace.\n\nMUST READ ENTIRE FILE: components/crm.tsx (all 17 exported page functions).\nAlso: components/layout/sidebar.tsx, components/tickets/ticket-review.tsx, components/payments/tomorrow-payments.tsx, components/dashboard/kpi-card.tsx, components/ui/*.\n\nRecreate ALL 20 screens already wireframed in this .pen file with full visual fidelity:\nDashboard, Finance (5 pages), Settlement (8 pages), Sales, Retention, Settings, NSF Tickets, CS/BO Tickets, Pagos Mañana.\n\nUse dark theme variables. Improve clarity: section grouping, labels, mobile nav drawer."
+    },
+    {
+      "id": "components-lib",
+      "type": "frame",
+      "name": "Shared Components",
+      "x": 0,
+      "y": 220,
+      "width": 580,
+      "height": 900,
+      "fill": "$bg-panel",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "comp-kpi",
+          "type": "frame",
+          "name": "KpiCard",
+          "reusable": true,
+          "width": 220,
+          "height": 110,
+          "fill": "$bg-card",
+          "cornerRadius": 10,
+          "children": [
+            {
+              "id": "comp-kpi-title",
+              "type": "text",
+              "content": "KPI TITLE",
+              "fill": "$text-muted",
+              "fontSize": 10
+            },
+            {
+              "id": "comp-kpi-value",
+              "type": "text",
+              "content": "$12,450",
+              "fill": "$text-primary",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "id": "comp-kpi-badge",
+              "type": "text",
+              "content": "positive",
+              "fill": "$positive",
+              "fontSize": 10
+            }
+          ]
+        },
+        {
+          "id": "comp-header",
+          "type": "frame",
+          "name": "Page Header",
+          "reusable": true,
+          "width": 400,
+          "height": 80,
+          "children": [
+            {
+              "id": "comp-header-eyebrow",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "comp-header-title",
+              "type": "text",
+              "content": "Page Title",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "id": "comp-sidebar-ref",
+          "type": "ref",
+          "ref": "comp-kpi",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "id": "screen-dashboard",
+      "type": "frame",
+      "name": "Screen — Dashboard",
+      "x": 0,
+      "y": 1200,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-dashboard-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-dashboard-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-dashboard-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-dashboard-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-dashboard-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-dashboard-header-title",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-dashboard-route",
+              "type": "text",
+              "content": "/",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-dashboard-kpi-0",
+              "type": "frame",
+              "name": "KPI — New Enrollments",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-0-label",
+                  "type": "text",
+                  "content": "NEW ENROLLMENTS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-kpi-1",
+              "type": "frame",
+              "name": "KPI — Total Enrolled Debt",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-1-label",
+                  "type": "text",
+                  "content": "TOTAL ENROLLED DEBT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-kpi-2",
+              "type": "frame",
+              "name": "KPI — Client Deposits",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-2-label",
+                  "type": "text",
+                  "content": "CLIENT DEPOSITS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-kpi-3",
+              "type": "frame",
+              "name": "KPI — Creditor Payments",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-3-label",
+                  "type": "text",
+                  "content": "CREDITOR PAYMENTS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-kpi-4",
+              "type": "frame",
+              "name": "KPI — Cancelled",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-4-label",
+                  "type": "text",
+                  "content": "CANCELLED",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-kpi-5",
+              "type": "frame",
+              "name": "KPI — Broken Settlements",
+              "x": 680,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-kpi-5-label",
+                  "type": "text",
+                  "content": "BROKEN SETTLEMENTS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-kpi-5-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-chart-0",
+              "type": "frame",
+              "name": "Clients by Status (Donut)",
+              "x": 260,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-dashboard-chart-0-lbl",
+                  "type": "text",
+                  "content": "Clients by Status (Donut)",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-chart-1",
+              "type": "frame",
+              "name": "Monthly Activity (Bars)",
+              "x": 740,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-dashboard-chart-1-lbl",
+                  "type": "text",
+                  "content": "Monthly Activity (Bars)",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-dashboard-table",
+              "type": "frame",
+              "name": "Table — Alertas críticas",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-dashboard-table-title",
+                  "type": "text",
+                  "content": "Alertas críticas",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-dashboard-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-dashboard-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-finance-overview",
+      "type": "frame",
+      "name": "Screen — Finance Overview",
+      "x": 1360,
+      "y": 1200,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-finance-overview-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-finance-overview-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-nav-1",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-nav-2",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-nav-3",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-nav-4",
+              "type": "text",
+              "content": "Alertas",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-finance-overview-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-finance-overview-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-finance-overview-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-finance-overview-header-title",
+              "type": "text",
+              "content": "Finance Overview",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-finance-overview-route",
+              "type": "text",
+              "content": "/finance",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-finance-overview-kpi-0",
+              "type": "frame",
+              "name": "KPI — Activos",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-0-label",
+                  "type": "text",
+                  "content": "ACTIVOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-kpi-1",
+              "type": "frame",
+              "name": "KPI — NSF",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-1-label",
+                  "type": "text",
+                  "content": "NSF",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-kpi-2",
+              "type": "frame",
+              "name": "KPI — On Hold",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-2-label",
+                  "type": "text",
+                  "content": "ON HOLD",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-kpi-3",
+              "type": "frame",
+              "name": "KPI — Waiting",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-3-label",
+                  "type": "text",
+                  "content": "WAITING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-kpi-4",
+              "type": "frame",
+              "name": "KPI — Depósitos hoy",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-4-label",
+                  "type": "text",
+                  "content": "DEPÓSITOS HOY",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-kpi-5",
+              "type": "frame",
+              "name": "KPI — Negocios Activos",
+              "x": 680,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-finance-overview-kpi-5-label",
+                  "type": "text",
+                  "content": "NEGOCIOS ACTIVOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-finance-overview-kpi-5-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-finance-overview-sections",
+              "type": "text",
+              "content": "Sections: Client Deposits (expandable) · Pagos al Acreedor (expandable) · Revenue · Alertas Reconciliación",
+              "fill": "$text-secondary",
+              "fontSize": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-client-deposits",
+      "type": "frame",
+      "name": "Screen — Client Deposits",
+      "x": 2720,
+      "y": 1200,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-client-deposits-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-client-deposits-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-nav-1",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-nav-2",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-nav-3",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-nav-4",
+              "type": "text",
+              "content": "Alertas",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-client-deposits-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-client-deposits-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-client-deposits-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-client-deposits-header-title",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-client-deposits-route",
+              "type": "text",
+              "content": "/finance/client-deposits",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-client-deposits-kpi-0",
+              "type": "frame",
+              "name": "KPI — Active",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-kpi-0-label",
+                  "type": "text",
+                  "content": "ACTIVE",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-client-deposits-kpi-1",
+              "type": "frame",
+              "name": "KPI — NSF",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-kpi-1-label",
+                  "type": "text",
+                  "content": "NSF",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-client-deposits-kpi-2",
+              "type": "frame",
+              "name": "KPI — On Hold",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-kpi-2-label",
+                  "type": "text",
+                  "content": "ON HOLD",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-client-deposits-kpi-3",
+              "type": "frame",
+              "name": "KPI — Waiting",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-kpi-3-label",
+                  "type": "text",
+                  "content": "WAITING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-client-deposits-kpi-4",
+              "type": "frame",
+              "name": "KPI — Promised to Pay",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-kpi-4-label",
+                  "type": "text",
+                  "content": "PROMISED TO PAY",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-client-deposits-table",
+              "type": "frame",
+              "name": "Table — Pagos Scheduled",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-client-deposits-table-title",
+                  "type": "text",
+                  "content": "Pagos Scheduled",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-client-deposits-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-client-deposits-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-creditor-payments",
+      "type": "frame",
+      "name": "Screen — Pagos al Acreedor",
+      "x": 4080,
+      "y": 1200,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-creditor-payments-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-creditor-payments-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-nav-1",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-nav-2",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-nav-3",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-nav-4",
+              "type": "text",
+              "content": "Alertas",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-payments-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-creditor-payments-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-creditor-payments-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-creditor-payments-header-title",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-creditor-payments-route",
+              "type": "text",
+              "content": "/finance/creditor-payments-overview",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-creditor-payments-kpi-0",
+              "type": "frame",
+              "name": "KPI — Negocios Activos",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-payments-kpi-0-label",
+                  "type": "text",
+                  "content": "NEGOCIOS ACTIVOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-payments-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-creditor-payments-kpi-1",
+              "type": "frame",
+              "name": "KPI — Dinero Saliendo",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-payments-kpi-1-label",
+                  "type": "text",
+                  "content": "DINERO SALIENDO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-payments-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-creditor-payments-kpi-2",
+              "type": "frame",
+              "name": "KPI — Pagos en Rango",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-payments-kpi-2-label",
+                  "type": "text",
+                  "content": "PAGOS EN RANGO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-payments-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-creditor-payments-kpi-3",
+              "type": "frame",
+              "name": "KPI — En Legal",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-payments-kpi-3-label",
+                  "type": "text",
+                  "content": "EN LEGAL",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-payments-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-creditor-payments-table",
+              "type": "frame",
+              "name": "Table — Settlement Payment Report",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-payments-table-title",
+                  "type": "text",
+                  "content": "Settlement Payment Report",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-payments-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-creditor-payments-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-revenue",
+      "type": "frame",
+      "name": "Screen — Revenue",
+      "x": 0,
+      "y": 2100,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-revenue-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-revenue-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-revenue-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-revenue-sidebar-nav-1",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-revenue-sidebar-nav-2",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-revenue-sidebar-nav-3",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-revenue-sidebar-nav-4",
+              "type": "text",
+              "content": "Alertas",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-revenue-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-revenue-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-revenue-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-revenue-header-title",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-revenue-route",
+              "type": "text",
+              "content": "/finance/revenue",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-revenue-kpi-0",
+              "type": "frame",
+              "name": "KPI — Fees Agendados",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-revenue-kpi-0-label",
+                  "type": "text",
+                  "content": "FEES AGENDADOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-revenue-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-revenue-kpi-1",
+              "type": "frame",
+              "name": "KPI — Fees Cobrados",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-revenue-kpi-1-label",
+                  "type": "text",
+                  "content": "FEES COBRADOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-revenue-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-revenue-kpi-2",
+              "type": "frame",
+              "name": "KPI — Pagos Cleared este mes",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-revenue-kpi-2-label",
+                  "type": "text",
+                  "content": "PAGOS CLEARED ESTE MES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-revenue-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-revenue-kpi-3",
+              "type": "frame",
+              "name": "KPI — Commissions warning",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-revenue-kpi-3-label",
+                  "type": "text",
+                  "content": "COMMISSIONS WARNING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-revenue-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-revenue-table",
+              "type": "frame",
+              "name": "Table — Payments Cleared",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-revenue-table-title",
+                  "type": "text",
+                  "content": "Payments Cleared",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-revenue-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-revenue-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-alerts",
+      "type": "frame",
+      "name": "Screen — Alertas Reconciliación",
+      "x": 1360,
+      "y": 2100,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-alerts-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-alerts-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-alerts-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-alerts-sidebar-nav-1",
+              "type": "text",
+              "content": "Client Deposits",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-alerts-sidebar-nav-2",
+              "type": "text",
+              "content": "Pagos al Acreedor",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-alerts-sidebar-nav-3",
+              "type": "text",
+              "content": "Revenue",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-alerts-sidebar-nav-4",
+              "type": "text",
+              "content": "Alertas",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-alerts-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-alerts-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-alerts-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-alerts-header-title",
+              "type": "text",
+              "content": "Alertas Reconciliación",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-alerts-route",
+              "type": "text",
+              "content": "/finance/alerts",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-alerts-kpi-0",
+              "type": "frame",
+              "name": "KPI — En seguimiento",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-kpi-0-label",
+                  "type": "text",
+                  "content": "EN SEGUIMIENTO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-alerts-kpi-1",
+              "type": "frame",
+              "name": "KPI — Medio",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-kpi-1-label",
+                  "type": "text",
+                  "content": "MEDIO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-alerts-kpi-2",
+              "type": "frame",
+              "name": "KPI — Riesgo Alto",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-kpi-2-label",
+                  "type": "text",
+                  "content": "RIESGO ALTO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-alerts-kpi-3",
+              "type": "frame",
+              "name": "KPI — Posible Broken",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-kpi-3-label",
+                  "type": "text",
+                  "content": "POSIBLE BROKEN",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-alerts-kpi-4",
+              "type": "frame",
+              "name": "KPI — Broken Settlement",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-kpi-4-label",
+                  "type": "text",
+                  "content": "BROKEN SETTLEMENT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-alerts-table",
+              "type": "frame",
+              "name": "Table — Alertas",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-alerts-table-title",
+                  "type": "text",
+                  "content": "Alertas",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-alerts-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-alerts-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-settlement-overview",
+      "type": "frame",
+      "name": "Screen — Settlement Overview",
+      "x": 2720,
+      "y": 2100,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-settlement-overview-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-settlement-overview-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settlement-overview-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-settlement-overview-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-settlement-overview-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-settlement-overview-header-title",
+              "type": "text",
+              "content": "Settlement Overview",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-settlement-overview-route",
+              "type": "text",
+              "content": "/settlement",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-settlement-overview-kpi-0",
+              "type": "frame",
+              "name": "KPI — Negociables",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-0-label",
+                  "type": "text",
+                  "content": "NEGOCIABLES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-settlement-overview-kpi-1",
+              "type": "frame",
+              "name": "KPI — Settlements Activos",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-1-label",
+                  "type": "text",
+                  "content": "SETTLEMENTS ACTIVOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-settlement-overview-kpi-2",
+              "type": "frame",
+              "name": "KPI — Alertas",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-2-label",
+                  "type": "text",
+                  "content": "ALERTAS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-settlement-overview-kpi-3",
+              "type": "frame",
+              "name": "KPI — Settlements Mes",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-3-label",
+                  "type": "text",
+                  "content": "SETTLEMENTS MES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-settlement-overview-kpi-4",
+              "type": "frame",
+              "name": "KPI — Broken Creditor",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-4-label",
+                  "type": "text",
+                  "content": "BROKEN CREDITOR",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-settlement-overview-kpi-5",
+              "type": "frame",
+              "name": "KPI — No Posibles",
+              "x": 680,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-settlement-overview-kpi-5-label",
+                  "type": "text",
+                  "content": "NO POSIBLES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-settlement-overview-kpi-5-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-creditor-status",
+      "type": "frame",
+      "name": "Screen — Creditor Status",
+      "x": 4080,
+      "y": 2100,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-creditor-status-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-creditor-status-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-creditor-status-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-creditor-status-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-creditor-status-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-creditor-status-header-title",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-creditor-status-route",
+              "type": "text",
+              "content": "/settlement/creditor-status",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-creditor-status-kpi-0",
+              "type": "frame",
+              "name": "KPI — Status count cards (up to 12)",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-status-kpi-0-label",
+                  "type": "text",
+                  "content": "STATUS COUNT CARDS (UP TO 12)",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-status-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-creditor-status-table",
+              "type": "frame",
+              "name": "Table — Creditor Status",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-creditor-status-table-title",
+                  "type": "text",
+                  "content": "Creditor Status",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-creditor-status-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-creditor-status-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-monthly",
+      "type": "frame",
+      "name": "Screen — Settlements del Mes",
+      "x": 0,
+      "y": 3000,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-monthly-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-monthly-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-monthly-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-monthly-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-monthly-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-monthly-header-title",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-monthly-route",
+              "type": "text",
+              "content": "/settlement/monthly",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-monthly-kpi-0",
+              "type": "frame",
+              "name": "KPI — Count",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-monthly-kpi-0-label",
+                  "type": "text",
+                  "content": "COUNT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-monthly-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-monthly-kpi-1",
+              "type": "frame",
+              "name": "KPI — Deuda negociada",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-monthly-kpi-1-label",
+                  "type": "text",
+                  "content": "DEUDA NEGOCIADA",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-monthly-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-monthly-kpi-2",
+              "type": "frame",
+              "name": "KPI — Monto",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-monthly-kpi-2-label",
+                  "type": "text",
+                  "content": "MONTO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-monthly-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-monthly-kpi-3",
+              "type": "frame",
+              "name": "KPI — Ahorro",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-monthly-kpi-3-label",
+                  "type": "text",
+                  "content": "AHORRO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-monthly-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-monthly-table",
+              "type": "frame",
+              "name": "Table — Settlements",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-monthly-table-title",
+                  "type": "text",
+                  "content": "Settlements",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-monthly-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-monthly-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-futures",
+      "type": "frame",
+      "name": "Screen — Futuros",
+      "x": 1360,
+      "y": 3000,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-futures-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-futures-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-futures-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-futures-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-futures-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-futures-header-title",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-futures-route",
+              "type": "text",
+              "content": "/settlement/futures",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-futures-kpi-0",
+              "type": "frame",
+              "name": "KPI — Sin acuerdo",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-futures-kpi-0-label",
+                  "type": "text",
+                  "content": "SIN ACUERDO",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-futures-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-futures-kpi-1",
+              "type": "frame",
+              "name": "KPI — Con fondos",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-futures-kpi-1-label",
+                  "type": "text",
+                  "content": "CON FONDOS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-futures-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-futures-kpi-2",
+              "type": "frame",
+              "name": "KPI — Negociables 55%",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-futures-kpi-2-label",
+                  "type": "text",
+                  "content": "NEGOCIABLES 55%",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-futures-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-futures-table",
+              "type": "frame",
+              "name": "Table — Cuentas futuras",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-futures-table-title",
+                  "type": "text",
+                  "content": "Cuentas futuras",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-futures-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-futures-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-negociables",
+      "type": "frame",
+      "name": "Screen — Negociables",
+      "x": 2720,
+      "y": 3000,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-negociables-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-negociables-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-negociables-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-negociables-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-negociables-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-negociables-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-negociables-header-title",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-negociables-route",
+              "type": "text",
+              "content": "/settlement/negociables",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-negociables-kpi-0",
+              "type": "frame",
+              "name": "KPI — Clientes negociables",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-negociables-kpi-0-label",
+                  "type": "text",
+                  "content": "CLIENTES NEGOCIABLES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-negociables-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-negociables-kpi-1",
+              "type": "frame",
+              "name": "KPI — Con deudas listas",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-negociables-kpi-1-label",
+                  "type": "text",
+                  "content": "CON DEUDAS LISTAS",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-negociables-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-negociables-kpi-2",
+              "type": "frame",
+              "name": "KPI — Escrow total",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-negociables-kpi-2-label",
+                  "type": "text",
+                  "content": "ESCROW TOTAL",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-negociables-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-negociables-kpi-3",
+              "type": "frame",
+              "name": "KPI — Deudas pendientes",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-negociables-kpi-3-label",
+                  "type": "text",
+                  "content": "DEUDAS PENDIENTES",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-negociables-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-negociables-table",
+              "type": "frame",
+              "name": "Table — Clientes negociables",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-negociables-table-title",
+                  "type": "text",
+                  "content": "Clientes negociables",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-negociables-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-negociables-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-not-possible",
+      "type": "frame",
+      "name": "Screen — No Posibles",
+      "x": 4080,
+      "y": 3000,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-not-possible-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-not-possible-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-not-possible-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-not-possible-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-not-possible-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-not-possible-header-title",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-not-possible-route",
+              "type": "text",
+              "content": "/settlement/not-possible",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-not-possible-kpi-0",
+              "type": "frame",
+              "name": "KPI — S40",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-not-possible-kpi-0-label",
+                  "type": "text",
+                  "content": "S40",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-not-possible-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-not-possible-kpi-1",
+              "type": "frame",
+              "name": "KPI — S50",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-not-possible-kpi-1-label",
+                  "type": "text",
+                  "content": "S50",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-not-possible-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-not-possible-kpi-2",
+              "type": "frame",
+              "name": "KPI — REMOVEPEND",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-not-possible-kpi-2-label",
+                  "type": "text",
+                  "content": "REMOVEPEND",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-not-possible-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-not-possible-kpi-3",
+              "type": "frame",
+              "name": "KPI — ADDPEND",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-not-possible-kpi-3-label",
+                  "type": "text",
+                  "content": "ADDPEND",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-not-possible-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-not-possible-table",
+              "type": "frame",
+              "name": "Table — No Posibles",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-not-possible-table-title",
+                  "type": "text",
+                  "content": "No Posibles",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-not-possible-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-not-possible-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-broken",
+      "type": "frame",
+      "name": "Screen — Rotos",
+      "x": 0,
+      "y": 3900,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-broken-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-broken-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-broken-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-broken-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-broken-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-broken-header-title",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-broken-route",
+              "type": "text",
+              "content": "/settlement/broken",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-broken-table",
+              "type": "frame",
+              "name": "Table — Settlements Rotos",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-broken-table-title",
+                  "type": "text",
+                  "content": "Settlements Rotos",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-broken-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-broken-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-plan",
+      "type": "frame",
+      "name": "Screen — Settlement Plan",
+      "x": 1360,
+      "y": 3900,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-plan-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-plan-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-0",
+              "type": "text",
+              "content": "Overview",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-1",
+              "type": "text",
+              "content": "Creditor Status",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-2",
+              "type": "text",
+              "content": "Settlements del Mes",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-3",
+              "type": "text",
+              "content": "Futuros",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-4",
+              "type": "text",
+              "content": "No Posibles",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-5",
+              "type": "text",
+              "content": "Rotos",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-6",
+              "type": "text",
+              "content": "Plan",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-nav-7",
+              "type": "text",
+              "content": "Negociables",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-plan-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-plan-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-plan-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-plan-header-title",
+              "type": "text",
+              "content": "Settlement Plan",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-plan-route",
+              "type": "text",
+              "content": "/settlement/plan",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-plan-table",
+              "type": "frame",
+              "name": "Table — Plan (monthly est, 55%, first settlement month)",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-plan-table-title",
+                  "type": "text",
+                  "content": "Plan (monthly est, 55%, first settlement month)",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-plan-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-plan-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-sales",
+      "type": "frame",
+      "name": "Screen — Sales",
+      "x": 2720,
+      "y": 3900,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-sales-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-sales-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-sales-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-sales-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-sales-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-sales-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-sales-header-title",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-sales-route",
+              "type": "text",
+              "content": "/sales",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-sales-kpi-0",
+              "type": "frame",
+              "name": "KPI — Total Signed",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-0-label",
+                  "type": "text",
+                  "content": "TOTAL SIGNED",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-kpi-1",
+              "type": "frame",
+              "name": "KPI — First Payment",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-1-label",
+                  "type": "text",
+                  "content": "FIRST PAYMENT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-kpi-2",
+              "type": "frame",
+              "name": "KPI — Missing",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-2-label",
+                  "type": "text",
+                  "content": "MISSING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-kpi-3",
+              "type": "frame",
+              "name": "KPI — Completion Rate",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-3-label",
+                  "type": "text",
+                  "content": "COMPLETION RATE",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-kpi-4",
+              "type": "frame",
+              "name": "KPI — Enrolled Debt",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-4-label",
+                  "type": "text",
+                  "content": "ENROLLED DEBT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-kpi-5",
+              "type": "frame",
+              "name": "KPI — Expected/Actual",
+              "x": 680,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-kpi-5-label",
+                  "type": "text",
+                  "content": "EXPECTED/ACTUAL",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-kpi-5-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-chart-0",
+              "type": "frame",
+              "name": "Timing by First Payment",
+              "x": 260,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-sales-chart-0-lbl",
+                  "type": "text",
+                  "content": "Timing by First Payment",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-chart-1",
+              "type": "frame",
+              "name": "Sales Rep Activity",
+              "x": 740,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-sales-chart-1-lbl",
+                  "type": "text",
+                  "content": "Sales Rep Activity",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-table",
+              "type": "frame",
+              "name": "Table — Sales Rep Performance",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-sales-table-title",
+                  "type": "text",
+                  "content": "Sales Rep Performance",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-sales-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-sales-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "screen-sales-note",
+              "type": "text",
+              "content": "Note: Demo data",
+              "fill": "$warning",
+              "fontSize": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-retention",
+      "type": "frame",
+      "name": "Screen — Retención",
+      "x": 4080,
+      "y": 3900,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-retention-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-retention-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-retention-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-retention-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-retention-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-retention-header-title",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-retention-route",
+              "type": "text",
+              "content": "/retention",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-retention-kpi-0",
+              "type": "frame",
+              "name": "KPI — Total Enrolled",
+              "x": 260,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-0-label",
+                  "type": "text",
+                  "content": "TOTAL ENROLLED",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-0-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-kpi-1",
+              "type": "frame",
+              "name": "KPI — Active Paying",
+              "x": 470,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-1-label",
+                  "type": "text",
+                  "content": "ACTIVE PAYING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-1-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-kpi-2",
+              "type": "frame",
+              "name": "KPI — Never Paid Left",
+              "x": 680,
+              "y": 80,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-2-label",
+                  "type": "text",
+                  "content": "NEVER PAID LEFT",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-2-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-kpi-3",
+              "type": "frame",
+              "name": "KPI — Cancelled After Paying",
+              "x": 260,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-3-label",
+                  "type": "text",
+                  "content": "CANCELLED AFTER PAYING",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-3-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-kpi-4",
+              "type": "frame",
+              "name": "KPI — Graduated",
+              "x": 470,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-4-label",
+                  "type": "text",
+                  "content": "GRADUATED",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-4-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-kpi-5",
+              "type": "frame",
+              "name": "KPI — Debt Lost",
+              "x": 680,
+              "y": 190,
+              "width": 200,
+              "height": 100,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-kpi-5-label",
+                  "type": "text",
+                  "content": "DEBT LOST",
+                  "fill": "$text-muted",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-kpi-5-val",
+                  "type": "text",
+                  "content": "1,234",
+                  "fill": "$text-primary",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-chart-0",
+              "type": "frame",
+              "name": "Segment Donut",
+              "x": 260,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-retention-chart-0-lbl",
+                  "type": "text",
+                  "content": "Segment Donut",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-chart-1",
+              "type": "frame",
+              "name": "Cancellations by Month",
+              "x": 740,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-retention-chart-1-lbl",
+                  "type": "text",
+                  "content": "Cancellations by Month",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-chart-2",
+              "type": "frame",
+              "name": "Tenure Buckets",
+              "x": 260,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-retention-chart-2-lbl",
+                  "type": "text",
+                  "content": "Tenure Buckets",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-chart-3",
+              "type": "frame",
+              "name": "Cancellation Reasons",
+              "x": 740,
+              "y": 320,
+              "width": 460,
+              "height": 220,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "children": [
+                {
+                  "id": "screen-retention-chart-3-lbl",
+                  "type": "text",
+                  "content": "Cancellation Reasons",
+                  "fill": "$text-primary",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "id": "screen-retention-table",
+              "type": "frame",
+              "name": "Table — Sales Rep Table",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-retention-table-title",
+                  "type": "text",
+                  "content": "Sales Rep Table",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-retention-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-retention-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-settings",
+      "type": "frame",
+      "name": "Screen — Settings",
+      "x": 0,
+      "y": 4800,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-settings-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-settings-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-settings-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$accent",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-settings-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-settings-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-settings-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-settings-header-title",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-settings-route",
+              "type": "text",
+              "content": "/settings",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-settings-note",
+              "type": "text",
+              "content": "Note: Configuration placeholder",
+              "fill": "$warning",
+              "fontSize": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-nsf-tickets",
+      "type": "frame",
+      "name": "Screen — NSF Tickets",
+      "x": 1360,
+      "y": 4800,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-nsf-tickets-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-nsf-tickets-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-nsf-tickets-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-nsf-tickets-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-nsf-tickets-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-nsf-tickets-header-title",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-nsf-tickets-route",
+              "type": "text",
+              "content": "/tickets/nsf",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-nsf-tickets-table",
+              "type": "frame",
+              "name": "Table — Proposed tickets",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-nsf-tickets-table-title",
+                  "type": "text",
+                  "content": "Proposed tickets",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-nsf-tickets-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-nsf-tickets-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-csbo-tickets",
+      "type": "frame",
+      "name": "Screen — CS/BO Alerts",
+      "x": 2720,
+      "y": 4800,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-csbo-tickets-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-csbo-tickets-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-csbo-tickets-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-csbo-tickets-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-csbo-tickets-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-csbo-tickets-header-title",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-csbo-tickets-route",
+              "type": "text",
+              "content": "/tickets/csbo",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "screen-tomorrow",
+      "type": "frame",
+      "name": "Screen — Pagos Mañana",
+      "x": 4080,
+      "y": 4800,
+      "width": 1280,
+      "height": 820,
+      "fill": "$bg-app",
+      "layout": "horizontal",
+      "children": [
+        {
+          "id": "screen-tomorrow-sidebar",
+          "type": "frame",
+          "name": "Sidebar",
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 820,
+          "fill": "$bg-panel",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-tomorrow-sidebar-brand",
+              "type": "text",
+              "content": "Settlements CRM",
+              "fill": "$text-primary",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-0",
+              "type": "text",
+              "content": "Dashboard",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-1",
+              "type": "text",
+              "content": "Finance",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-2",
+              "type": "text",
+              "content": "NSF Tickets",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-3",
+              "type": "text",
+              "content": "CS/BO Alerts",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-4",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-5",
+              "type": "text",
+              "content": "Settlement",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-6",
+              "type": "text",
+              "content": "Retención",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-7",
+              "type": "text",
+              "content": "Sales",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-nav-8",
+              "type": "text",
+              "content": "Settings",
+              "fill": "$text-secondary",
+              "fontSize": 13,
+              "fontWeight": "400"
+            },
+            {
+              "id": "screen-tomorrow-sidebar-user",
+              "type": "text",
+              "content": "Laura Santos · Operator",
+              "fill": "$text-muted",
+              "fontSize": 11
+            }
+          ]
+        },
+        {
+          "id": "screen-tomorrow-main",
+          "type": "frame",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "screen-tomorrow-header-label",
+              "type": "text",
+              "content": "SETTLEMENTS CRM",
+              "fill": "$text-muted",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "id": "screen-tomorrow-header-title",
+              "type": "text",
+              "content": "Pagos Mañana",
+              "fill": "$text-primary",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "id": "screen-tomorrow-route",
+              "type": "text",
+              "content": "/payments/tomorrow",
+              "fill": "$text-muted",
+              "fontSize": 11
+            },
+            {
+              "id": "screen-tomorrow-table",
+              "type": "frame",
+              "name": "Table — Payment tables with totals",
+              "x": 260,
+              "y": 560,
+              "width": 960,
+              "height": 200,
+              "fill": "$bg-panel",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "screen-tomorrow-table-title",
+                  "type": "text",
+                  "content": "Payment tables with totals",
+                  "fill": "$text-primary",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "screen-tomorrow-table-rows",
+                  "type": "frame",
+                  "name": "Rows",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$bg-elevated",
+                  "children": [
+                    {
+                      "id": "screen-tomorrow-table-row1",
+                      "type": "text",
+                      "content": "Column headers → data rows → pagination",
+                      "fill": "$text-muted",
+                      "fontSize": 11
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "screen-tomorrow-sections",
+              "type": "text",
+              "content": "Sections: Incoming — client deposits · Outgoing — creditor payments",
+              "fill": "$text-secondary",
+              "fontSize": 11
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

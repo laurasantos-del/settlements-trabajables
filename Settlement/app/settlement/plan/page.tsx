@@ -1,5 +1,5 @@
-import { SettlementPlan } from "@/components/settlement/settlement-dashboards";
+import { SettlementPlanPage } from "@/components/crm";
 
-export default function SettlementPlanPage() {
-  return <SettlementPlan />;
+export default function Page() {
+  return <SettlementPlanPage />;
 }

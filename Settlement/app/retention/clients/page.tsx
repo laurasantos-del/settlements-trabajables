@@ -1,5 +1,5 @@
-import { LifecycleDashboard } from "@/components/retention/lifecycle-dashboard";
+import { RetentionPage } from "@/components/crm";
 
-export default function RetentionClientsPage() {
-  return <LifecycleDashboard mode="clients" />;
+export default function Page() {
+  return <RetentionPage />;
 }

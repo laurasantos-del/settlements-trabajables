@@ -1,3 +1,5 @@
+# Build from the parent directory so Reportes/ is in context:
+#   docker build -f Settlement/Dockerfile -t settlements-api ..
 FROM python:3.12-slim
 
 # Install Chromium + driver (needed for Selenium scraper)
@@ -8,10 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY Settlement/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server.py debtmanager_scraper.py ./
+COPY Settlement/server.py Settlement/debtmanager_scraper.py ./
+COPY Reportes /Reportes
 
 ENV HEADLESS=true \
     CHROME_BIN=/usr/bin/chromium \

@@ -1,5 +1,5 @@
-import { RevenueDashboard } from "@/components/finance/revenue-dashboard";
+import { RevenuePage } from "@/components/crm";
 
 export default function Page() {
-  return <RevenueDashboard />;
+  return <RevenuePage />;
 }

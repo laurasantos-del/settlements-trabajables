@@ -1,5 +1,5 @@
-import { SalesDashboard } from "@/components/sales/sales-dashboard";
+import { SalesPage } from "@/components/crm";
 
 export default function Page() {
-  return <SalesDashboard />;
+  return <SalesPage />;
 }
